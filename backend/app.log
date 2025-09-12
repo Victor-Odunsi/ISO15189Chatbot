@@ -1,0 +1,891 @@
+INFO:root:Application Shutdown
+2025-09-08 11:28:53,336 - INFO - Application Initialization complete
+2025-09-08 11:28:59,332 - INFO - Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': 520ad1b1-892c-491e-b105-950b1d515f13, User question: hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 520ad1b1-892c-491e-b105-950b1d515f13, User question: hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 9c7919e8-1376-41a3-9b88-ea1efa10d4ee, User question: hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 22a698f7-3500-46cb-a62b-148c281173e4, User question: hi
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': cc65670d-f203-4b75-84f7-09b5cbbbffda, User question: what can you do for me
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': dde4f541-8e86-41ef-bed7-00d8ad4a584c, User question: hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 45e69958-5eef-4035-b5fa-28ae9c5889fc, User question: hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': None, User question: hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': a22fb9b0-2678-45fe-9b50-a12ea439da29, User question: write an SOP for quality manual
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': a22fb9b0-2678-45fe-9b50-a12ea439da29, User question: yes
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': a22fb9b0-2678-45fe-9b50-a12ea439da29, User question: i need you to write the SOP in text with the responsibilities and all
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': a22fb9b0-2678-45fe-9b50-a12ea439da29, User question: write SOP for quality control
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 502 Bad Gateway"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 0.497262 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: write me an SOP for Quality manual
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 25.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: hi
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 488aeacd-507c-497a-bb76-b422c3f840ac, User question: write me an SOP for quality manual
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': 488aeacd-507c-497a-bb76-b422c3f840ac, User question: hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 488aeacd-507c-497a-bb76-b422c3f840ac, User question: write me an SOP for quality manual
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 16.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 4ee194ef-7238-4967-ac85-9c360b495065, User question: write me an SOP for quality manual
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 19.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': 8c9331df-6bbe-486d-bb60-e073a4109cd6, User question: hi
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 8c9331df-6bbe-486d-bb60-e073a4109cd6, User question: tell me about lab qms
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 0.497768 seconds
+ERROR:root:Agent error: Connection error.
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': 8c9331df-6bbe-486d-bb60-e073a4109cd6, User question: hi
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 8c9331df-6bbe-486d-bb60-e073a4109cd6, User question: tell me about lab qms
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 8c9331df-6bbe-486d-bb60-e073a4109cd6, User question: write me an SOP for Quality manual
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': None, User question: what can you do for me
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 0.433982 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': None, User question: hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 5f905ea3-1766-4ba6-9068-78029ec827e5, User question: what can you do for me
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': 5f905ea3-1766-4ba6-9068-78029ec827e5, User question: Tell me about uncertainty of measurement
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': 5f905ea3-1766-4ba6-9068-78029ec827e5, User question: Tell me about uncertainty of measurement
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 5f905ea3-1766-4ba6-9068-78029ec827e5, User question: how do i measure it
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 16.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 42.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 21.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: HI
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': a66a805e-7bb9-4a38-8434-2d314edefd49, User question: WHAT CAN YOU DO FOR ME
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': a66a805e-7bb9-4a38-8434-2d314edefd49, User question: okay
+
+tell me about laboratory QMS
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 11.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 3.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 5.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 34.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 19.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': a66a805e-7bb9-4a38-8434-2d314edefd49, User question: tell me about uncertainty of measurement
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': a66a805e-7bb9-4a38-8434-2d314edefd49, User question: how do i measure it
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ERROR:root:Agent error: Parsing LLM output produced both a final answer and a parse-able action:: Action: final_answer
+Action Input: {'output': 'Measuring the uncertainty of measurement involves several steps, as outlined in ISO 15189. Here are the key steps:\n\n1. **Estimate the uncertainty components**: Identify the sources of uncertainty that affect the measurement, such as instrument calibration, operator variability, and environmental factors. Estimate the uncertainty associated with each component using statistical methods, such as the standard deviation of repeated measurements.\n2. **Calculate the combined standard uncertainty**: Use the law of propagation of uncertainty to calculate the combined standard uncertainty (u) from the individual uncertainty components.\n3. **Determine the coverage factor**: Choose a coverage factor (k) that depends on the level of confidence desired. A common value for k is 2, which corresponds to a 95% confidence interval.\n4. **Calculate the expanded uncertainty**: Multiply the combined standard uncertainty (u) by the coverage factor (k) to obtain the expanded uncertainty (U).\n5. **Express the uncertainty**: Report the expanded uncertainty (U) as a range of values, typically in the form of ±U.\n\nFor example, if the combined standard uncertainty (u) is 0.5 and the coverage factor (k) is 2, the expanded uncertainty (U) would be 1.0.\n\n**Example calculation:**\n\nCombined standard uncertainty (u) = 0.5\nCoverage factor (k) = 2\nExpanded uncertainty (U) = 2 x 0.5 = 1.0\n\nThe result of the measurement would be reported as:\n\nResult = 10.0 ± 1.0\n\nThis indicates that the true value of the measurement is likely to lie within the range of 9.0 to 11.0.\n\nNote that the uncertainty of measurement should be reported in the same units as the measurement result.'}
+Final Answer: Measuring the uncertainty of measurement involves several steps, as outlined in ISO 15189. Here are the key steps: 
+1. Estimate the uncertainty components: Identify the sources of uncertainty that affect the measurement, such as instrument calibration, operator variability, and environmental factors. Estimate the uncertainty associated with each component using statistical methods, such as the standard deviation of repeated measurements.
+2. Calculate the combined standard uncertainty: Use the law of propagation of uncertainty to calculate the combined standard uncertainty (u) from the individual uncertainty components.
+3. Determine the coverage factor: Choose a coverage factor (k) that depends on the level of confidence desired. A common value for k is 2, which corresponds to a 95% confidence interval.
+4. Calculate the expanded uncertainty: Multiply the combined standard uncertainty (u) by the coverage factor (k) to obtain the expanded uncertainty (U).
+5. Express the uncertainty: Report the expanded uncertainty (U) as a range of values, typically in the form of ±U.
+For example, if the combined standard uncertainty (u) is 0.5 and the coverage factor (k) is 2, the expanded uncertainty (U) would be 1.0.
+Example calculation:
+Combined standard uncertainty (u) = 0.5
+Coverage factor (k) = 2
+Expanded uncertainty (U) = 2 x 0.5 = 1.0
+The result of the measurement would be reported as:
+Result = 10.0 ± 1.0
+This indicates that the true value of the measurement is likely to lie within the range of 9.0 to 11.0.
+Note that the uncertainty of measurement should be reported in the same units as the measurement result.
+For troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/OUTPUT_PARSING_FAILURE 
+INFO:root:'Session ID': a66a805e-7bb9-4a38-8434-2d314edefd49, User question: write an SOP for meaurement of uncertainty
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': a66a805e-7bb9-4a38-8434-2d314edefd49, User question: write an SOP for meaurement of uncertainty
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 35.000000 seconds
+ERROR:root:Agent error: Request timed out.
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': a66a805e-7bb9-4a38-8434-2d314edefd49, User question: write an SOP for meaurement of uncertainty
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 44.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 38.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': a66a805e-7bb9-4a38-8434-2d314edefd49, User question: create checklist for internal audit
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 19.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 32.000000 seconds
+ERROR:root:Agent error: variable agent_scratchpad should be a list of base messages, got 
+
+I now need to return a final answer based on the previous steps: of type <class 'str'>
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 4.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: hi
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ERROR:root:Agent error: variable agent_scratchpad should be a list of base messages, got ```json
+{
+    "action": "rag_answer",
+    "action_input": "hi"
+}
+```
+Observation: {'output': "Hello. I'm here to assist you with any questions or tasks related to ISO 15189, laboratory standards, quality management, and more. What's on your mind? Do you have a specific question or topic you'd like to discuss?"}
+Thought:```json
+{
+    "action": "rag_answer",
+    "action_input": "response to last comment"
+}
+```
+Observation: {'output': "I understand the context and requirements for our conversation. \n\nTo confirm, I will:\n\n1. Provide detailed, accurate, and well-explained answers.\n2. Write complete documents (like SOPs, reports, templates) in plain text.\n3. Respond naturally in paragraphs, using examples when helpful.\n4. Consult the 'rag_tool' for answers related to ISO 15189, laboratory standards, quality management, CLAUSES, or measurement procedures.\n5. Never return an answer without using the 'rag_tool'.\n6. Structure responses in clear paragraphs, with examples or bullet points when helpful.\n7. Write complete, practical, and easy-to-use documents when writing SOPs/templates/reports.\n8. Politely decline requests for file formats (e.g., .docx, .pdf, attachments) and suggest copying the text into a Word or PDF document.\n\nPlease go ahead and ask your questions, and I'll do my best to assist you."}
+Thought:```json
+{
+    "action": "create_checklist",
+    "action_input": "response to last comment"
+}
+```
+Observation: {'output': 'Based on the provided standard text, I will generate an ISO 15189 Internal Audit Checklist. Here\'s the first section:\n\n**Section 1: Context and Requirements**\n\n1. Is the context and requirements for this conversation clearly understood?\n2. Are the guidelines for this conversation documented and easily accessible?\n3. Are the provided guidelines (points 1-8) acknowledged and agreed upon by all parties involved?\n4. Are the answers to the provided guidelines (points 1-8) documented and easily accessible?\n\n**Section 2: Documentation**\n\n5. Are all documents (SOPs, reports, templates) written in plain text?\n6. Are all documents (SOPs, reports, templates) complete and well-explained?\n7. Are all documents (SOPs, reports, templates) reviewed and approved by relevant personnel?\n8. Are all documents (SOPs, reports, templates) easily accessible and up-to-date?\n\n**Section 3: Staff Competency and Process Adherence**\n\n9. Are all staff members familiar with the \'rag_tool\' for ISO 15189, laboratory standards, quality management, CLAUSES, or measurement procedures?\n10. Do staff members consult the \'rag_tool\' for answers related to ISO 15189, laboratory standards, quality management, CLAUSES, or measurement procedures?\n11. Are staff members trained on the use of the \'rag_tool\'?\n12. Are staff members aware of the importance of using the \'rag_tool\' for answers related to ISO 15189, laboratory standards, quality management, CLAUSES, or measurement procedures?\n13. Are staff members adhering to the guidelines for writing complete, practical, and easy-to-use documents (SOPs/templates/reports)?\n14. Are staff members aware of the importance of politely declining requests for file formats (e.g., .docx, .pdf, attachments)?\n\nPlease answer these questions with a "yes" or "no" to help me generate the next section of the checklist.'}
+Thought:
+
+I now need to return a final answer based on the previous steps: of type <class 'str'>
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': 5dd366ed-91c5-42ca-8048-51740a9f52f0, User question: hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+ERROR:root:Agent error: variable agent_scratchpad should be a list of base messages, got ```json
+{
+    "action": "final_answer",
+    "action_input": "Hello! I'm here to assist you. What would you like to talk about or ask?"
+}
+```
+Observation: Hello! I'm here to assist you. What would you like to talk about or ask?
+Thought:```json
+{
+    "action": "final_answer",
+    "action_input": "Your last comment was a greeting, and my response was a friendly hello. I'm here to assist you with any questions or topics you'd like to discuss."
+}
+Observation: Your last comment was a greeting, and my response was a friendly hello. I'm here to assist you with any questions or topics you'd like to discuss.
+Thought:```json
+{
+    "action": "rag_answer",
+    "action_input": "Response to last comment"
+}
+Observation: {'output': "It seems there's no last comment to respond to. This conversation just started. How can I assist you today? Are you looking for information on ISO 15189 or laboratory standards?"}
+Thought:
+
+I now need to return a final answer based on the previous steps: of type <class 'str'>
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: Hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': a2388d51-0732-45be-9efc-81f3ac4a4952, User question: what can you do for me
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': a2388d51-0732-45be-9efc-81f3ac4a4952, User question: okay
+
+write an SOP for quality manual
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 1.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': a2388d51-0732-45be-9efc-81f3ac4a4952, User question: okay provide text for it
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 17.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 35.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 9.000000 seconds
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: hi
+INFO:root:Routing request to RAG Answering hi
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': None, User question: what is ISO15189 standard
+INFO:root:Routing request to RAG Answering what is ISO15189 standard
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:Application Initialization complete
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:Application Initialization complete
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: hi
+INFO:root:Routing request to Casual Handler hi
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Initialization complete
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: hi
+INFO:root:Routing request to Casual Handler hi
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 6d2c5639-4d48-496c-8cf4-3753d883bd2e, User question: tell me about lab qms
+INFO:root:Routing request to RAG Answering tell me about lab qms
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: hi
+INFO:root:Routing request to Casual Handler hi
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': f839b279-054b-4813-9a5f-a816a7cc9537, User question: tell me about uncertainty of measurement
+INFO:root:Routing request to RAG Answering tell me about uncertainty of measurement
+INFO:root:Application Shutdown
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-59' coro=<py_anext.<locals>.anext_impl() done, defined at C:\Users\PC\rag-env\Lib\site-packages\langchain_core\utils\aiter.py:71> exception=KeyError('context')>
+Traceback (most recent call last):
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\utils\aiter.py", line 78, in anext_impl
+    return await __anext__(iterator)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 3966, in atransform
+    async for chunk in self._atransform_stream_with_config(
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 2320, in _atransform_stream_with_config
+    chunk = await coro_with_context(py_anext(iterator), context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 3952, in _atransform
+    chunk = AddableDict({step_name: task.result()})
+                                    ^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 3935, in get_next_chunk
+    return await py_anext(generator)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 5670, in atransform
+    async for item in self.bound.atransform(
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 3449, in atransform
+    async for chunk in self._atransform_stream_with_config(
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 2320, in _atransform_stream_with_config
+    chunk = await coro_with_context(py_anext(iterator), context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 3416, in _atransform
+    async for output in final_pipeline:
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\output_parsers\transform.py", line 95, in atransform
+    async for chunk in self._atransform_stream_with_config(
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 2280, in _atransform_stream_with_config
+    final_input: Optional[Input] = await py_anext(input_for_tracing, None)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\utils\aiter.py", line 78, in anext_impl
+    return await __anext__(iterator)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\utils\aiter.py", line 133, in tee_peer
+    item = await iterator.__anext__()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 1472, in atransform
+    async for ichunk in input:
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 1472, in atransform
+    async for ichunk in input:
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 5670, in atransform
+    async for item in self.bound.atransform(
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\passthrough.py", line 649, in atransform
+    async for chunk in self._atransform_stream_with_config(
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 2320, in _atransform_stream_with_config
+    chunk = await coro_with_context(py_anext(iterator), context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\passthrough.py", line 638, in _atransform
+    yield await first_map_chunk_task
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\utils\aiter.py", line 78, in anext_impl
+    return await __anext__(iterator)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 3966, in atransform
+    async for chunk in self._atransform_stream_with_config(
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 2320, in _atransform_stream_with_config
+    chunk = await coro_with_context(py_anext(iterator), context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 3952, in _atransform
+    chunk = AddableDict({step_name: task.result()})
+                                    ^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 3935, in get_next_chunk
+    return await py_anext(generator)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 5012, in atransform
+    async for output in self._atransform_stream_with_config(
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 2320, in _atransform_stream_with_config
+    chunk = await coro_with_context(py_anext(iterator), context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 4976, in _atransform
+    output = await acall_func_with_variable_args(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 4951, in f
+    return await run_in_executor(config, func, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\config.py", line 617, in run_in_executor
+    return await asyncio.get_running_loop().run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\config.py", line 608, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\base.py", line 4945, in func
+    return call_func_with_variable_args(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain_core\runnables\config.py", line 429, in call_func_with_variable_args
+    return func(input, **kwargs)  # type: ignore[call-arg]
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\rag-env\Lib\site-packages\langchain\chains\combine_documents\stuff.py", line 86, in format_docs
+    for doc in inputs[document_variable_name]
+               ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'context'
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: hello
+INFO:root:Routing request to Casual Handler hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': f69021a3-b272-46ff-8968-f142f51cedf0, User question: Tel me about uncertainty of measurement
+INFO:root:Routing request to RAG Answering Tel me about uncertainty of measurement
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: hey
+INFO:root:Routing request to Casual Handler hey
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 50098296-4037-45f6-bf7d-7d4201dcbf6a, User question: tell me about Laboratory QMS
+INFO:root:Routing request to RAG Answering tell me about Laboratory QMS
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': 50098296-4037-45f6-bf7d-7d4201dcbf6a, User question: hi
+INFO:root:Routing request to Casual Handler hi
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 50098296-4037-45f6-bf7d-7d4201dcbf6a, User question: what is uncertainty of measurement
+INFO:root:Routing request to RAG Answering what is uncertainty of measurement
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': None, User question: hello
+INFO:root:Routing request to Casual Handler hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:NEW TOKEN: ''
+INFO:root:NEW TOKEN: 'Hello'
+INFO:root:NEW TOKEN: '!'
+INFO:root:NEW TOKEN: ' How'
+INFO:root:NEW TOKEN: "'s"
+INFO:root:NEW TOKEN: ' your'
+INFO:root:NEW TOKEN: ' day'
+INFO:root:NEW TOKEN: ' going'
+INFO:root:NEW TOKEN: ' so'
+INFO:root:NEW TOKEN: ' far'
+INFO:root:NEW TOKEN: '?'
+INFO:root:NEW TOKEN: ''
+INFO:root:'Session ID': 45b2aec4-8f1e-4f45-941a-b72141211aca, User question: tell me about Lab QMS
+INFO:root:Routing request to RAG Answering tell me about Lab QMS
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Standalone question: []
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:NEW TOKEN: ''
+INFO:root:NEW TOKEN: 'It'
+INFO:root:NEW TOKEN: ' seems'
+INFO:root:NEW TOKEN: ' like'
+INFO:root:NEW TOKEN: ' the'
+INFO:root:NEW TOKEN: ' conversation'
+INFO:root:NEW TOKEN: ' has'
+INFO:root:NEW TOKEN: ' just'
+INFO:root:NEW TOKEN: ' started'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' There'
+INFO:root:NEW TOKEN: "'s"
+INFO:root:NEW TOKEN: ' no'
+INFO:root:NEW TOKEN: ' question'
+INFO:root:NEW TOKEN: ' to'
+INFO:root:NEW TOKEN: ' answer'
+INFO:root:NEW TOKEN: ' yet'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' \n\n'
+INFO:root:NEW TOKEN: 'To'
+INFO:root:NEW TOKEN: ' get'
+INFO:root:NEW TOKEN: ' started'
+INFO:root:NEW TOKEN: ','
+INFO:root:NEW TOKEN: ' you'
+INFO:root:NEW TOKEN: ' can'
+INFO:root:NEW TOKEN: ' ask'
+INFO:root:NEW TOKEN: ' me'
+INFO:root:NEW TOKEN: ' a'
+INFO:root:NEW TOKEN: ' question'
+INFO:root:NEW TOKEN: ' or'
+INFO:root:NEW TOKEN: ' share'
+INFO:root:NEW TOKEN: ' something'
+INFO:root:NEW TOKEN: ' on'
+INFO:root:NEW TOKEN: ' your'
+INFO:root:NEW TOKEN: ' mind'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' I'
+INFO:root:NEW TOKEN: "'m"
+INFO:root:NEW TOKEN: ' here'
+INFO:root:NEW TOKEN: ' to'
+INFO:root:NEW TOKEN: ' help'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ''
+INFO:root:'Session ID': 45b2aec4-8f1e-4f45-941a-b72141211aca, User question: what is uncertainty of measurement
+INFO:root:Routing request to RAG Answering what is uncertainty of measurement
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Standalone question: []
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:NEW TOKEN: ''
+INFO:root:NEW TOKEN: 'It'
+INFO:root:NEW TOKEN: ' seems'
+INFO:root:NEW TOKEN: ' like'
+INFO:root:NEW TOKEN: ' the'
+INFO:root:NEW TOKEN: ' conversation'
+INFO:root:NEW TOKEN: ' has'
+INFO:root:NEW TOKEN: ' just'
+INFO:root:NEW TOKEN: ' started'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' There'
+INFO:root:NEW TOKEN: "'s"
+INFO:root:NEW TOKEN: ' no'
+INFO:root:NEW TOKEN: ' question'
+INFO:root:NEW TOKEN: ' to'
+INFO:root:NEW TOKEN: ' answer'
+INFO:root:NEW TOKEN: ' yet'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' To'
+INFO:root:NEW TOKEN: ' get'
+INFO:root:NEW TOKEN: ' started'
+INFO:root:NEW TOKEN: ','
+INFO:root:NEW TOKEN: ' you'
+INFO:root:NEW TOKEN: ' can'
+INFO:root:NEW TOKEN: ' ask'
+INFO:root:NEW TOKEN: ' me'
+INFO:root:NEW TOKEN: ' a'
+INFO:root:NEW TOKEN: ' question'
+INFO:root:NEW TOKEN: ' or'
+INFO:root:NEW TOKEN: ' share'
+INFO:root:NEW TOKEN: ' something'
+INFO:root:NEW TOKEN: ' on'
+INFO:root:NEW TOKEN: ' your'
+INFO:root:NEW TOKEN: ' mind'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' I'
+INFO:root:NEW TOKEN: "'m"
+INFO:root:NEW TOKEN: ' here'
+INFO:root:NEW TOKEN: ' to'
+INFO:root:NEW TOKEN: ' help'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' \n\n'
+INFO:root:NEW TOKEN: 'Would'
+INFO:root:NEW TOKEN: ' you'
+INFO:root:NEW TOKEN: ' like'
+INFO:root:NEW TOKEN: ' to'
+INFO:root:NEW TOKEN: ' ask'
+INFO:root:NEW TOKEN: ' about'
+INFO:root:NEW TOKEN: ' Lab'
+INFO:root:NEW TOKEN: ' Q'
+INFO:root:NEW TOKEN: 'MS'
+INFO:root:NEW TOKEN: ' now'
+INFO:root:NEW TOKEN: '?'
+INFO:root:NEW TOKEN: ''
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': 45b2aec4-8f1e-4f45-941a-b72141211aca, User question: hello
+INFO:root:Routing request to Casual Handler hello
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:NEW TOKEN: ''
+INFO:root:NEW TOKEN: 'Hello'
+INFO:root:NEW TOKEN: '!'
+INFO:root:NEW TOKEN: ' How'
+INFO:root:NEW TOKEN: "'s"
+INFO:root:NEW TOKEN: ' your'
+INFO:root:NEW TOKEN: ' day'
+INFO:root:NEW TOKEN: ' going'
+INFO:root:NEW TOKEN: ' so'
+INFO:root:NEW TOKEN: ' far'
+INFO:root:NEW TOKEN: '?'
+INFO:root:NEW TOKEN: ''
+INFO:root:'Session ID': 45b2aec4-8f1e-4f45-941a-b72141211aca, User question: what is uncertainty of measurement
+INFO:root:Routing request to RAG Answering what is uncertainty of measurement
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Standalone question: []
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:NEW TOKEN: ''
+INFO:root:NEW TOKEN: 'It'
+INFO:root:NEW TOKEN: ' seems'
+INFO:root:NEW TOKEN: ' like'
+INFO:root:NEW TOKEN: ' the'
+INFO:root:NEW TOKEN: ' conversation'
+INFO:root:NEW TOKEN: ' has'
+INFO:root:NEW TOKEN: ' just'
+INFO:root:NEW TOKEN: ' started'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' There'
+INFO:root:NEW TOKEN: "'s"
+INFO:root:NEW TOKEN: ' no'
+INFO:root:NEW TOKEN: ' question'
+INFO:root:NEW TOKEN: ' to'
+INFO:root:NEW TOKEN: ' answer'
+INFO:root:NEW TOKEN: ' yet'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' To'
+INFO:root:NEW TOKEN: ' get'
+INFO:root:NEW TOKEN: ' started'
+INFO:root:NEW TOKEN: ','
+INFO:root:NEW TOKEN: ' you'
+INFO:root:NEW TOKEN: ' can'
+INFO:root:NEW TOKEN: ' ask'
+INFO:root:NEW TOKEN: ' me'
+INFO:root:NEW TOKEN: ' a'
+INFO:root:NEW TOKEN: ' question'
+INFO:root:NEW TOKEN: ' or'
+INFO:root:NEW TOKEN: ' share'
+INFO:root:NEW TOKEN: ' something'
+INFO:root:NEW TOKEN: ' on'
+INFO:root:NEW TOKEN: ' your'
+INFO:root:NEW TOKEN: ' mind'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' I'
+INFO:root:NEW TOKEN: "'m"
+INFO:root:NEW TOKEN: ' here'
+INFO:root:NEW TOKEN: ' to'
+INFO:root:NEW TOKEN: ' help'
+INFO:root:NEW TOKEN: '.\n\n'
+INFO:root:NEW TOKEN: 'Would'
+INFO:root:NEW TOKEN: ' you'
+INFO:root:NEW TOKEN: ' like'
+INFO:root:NEW TOKEN: ' to'
+INFO:root:NEW TOKEN: ' ask'
+INFO:root:NEW TOKEN: ' about'
+INFO:root:NEW TOKEN: ' Lab'
+INFO:root:NEW TOKEN: ' Q'
+INFO:root:NEW TOKEN: 'MS'
+INFO:root:NEW TOKEN: ' now'
+INFO:root:NEW TOKEN: '?'
+INFO:root:NEW TOKEN: ''
+INFO:root:'Session ID': 45b2aec4-8f1e-4f45-941a-b72141211aca, User question: yes
+INFO:root:Routing request to RAG Answering yes
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Standalone question: []
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:NEW TOKEN: ''
+INFO:root:NEW TOKEN: 'It'
+INFO:root:NEW TOKEN: ' seems'
+INFO:root:NEW TOKEN: ' like'
+INFO:root:NEW TOKEN: ' the'
+INFO:root:NEW TOKEN: ' conversation'
+INFO:root:NEW TOKEN: ' has'
+INFO:root:NEW TOKEN: ' just'
+INFO:root:NEW TOKEN: ' started'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' There'
+INFO:root:NEW TOKEN: "'s"
+INFO:root:NEW TOKEN: ' no'
+INFO:root:NEW TOKEN: ' question'
+INFO:root:NEW TOKEN: ' to'
+INFO:root:NEW TOKEN: ' answer'
+INFO:root:NEW TOKEN: ' yet'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' To'
+INFO:root:NEW TOKEN: ' get'
+INFO:root:NEW TOKEN: ' started'
+INFO:root:NEW TOKEN: ','
+INFO:root:NEW TOKEN: ' you'
+INFO:root:NEW TOKEN: ' can'
+INFO:root:NEW TOKEN: ' ask'
+INFO:root:NEW TOKEN: ' me'
+INFO:root:NEW TOKEN: ' a'
+INFO:root:NEW TOKEN: ' question'
+INFO:root:NEW TOKEN: ' or'
+INFO:root:NEW TOKEN: ' share'
+INFO:root:NEW TOKEN: ' something'
+INFO:root:NEW TOKEN: ' on'
+INFO:root:NEW TOKEN: ' your'
+INFO:root:NEW TOKEN: ' mind'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' I'
+INFO:root:NEW TOKEN: "'m"
+INFO:root:NEW TOKEN: ' here'
+INFO:root:NEW TOKEN: ' to'
+INFO:root:NEW TOKEN: ' help'
+INFO:root:NEW TOKEN: '.\n\n'
+INFO:root:NEW TOKEN: 'Would'
+INFO:root:NEW TOKEN: ' you'
+INFO:root:NEW TOKEN: ' like'
+INFO:root:NEW TOKEN: ' to'
+INFO:root:NEW TOKEN: ' ask'
+INFO:root:NEW TOKEN: ' about'
+INFO:root:NEW TOKEN: ' Lab'
+INFO:root:NEW TOKEN: ' Q'
+INFO:root:NEW TOKEN: 'MS'
+INFO:root:NEW TOKEN: ' now'
+INFO:root:NEW TOKEN: '?'
+INFO:root:NEW TOKEN: ''
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': a10efc63-f990-40bc-9214-2063b12f7e02, User question: hey
+INFO:root:Routing request to Casual Handler hey
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:NEW TOKEN: ''
+INFO:root:NEW TOKEN: 'How'
+INFO:root:NEW TOKEN: "'s"
+INFO:root:NEW TOKEN: ' your'
+INFO:root:NEW TOKEN: ' day'
+INFO:root:NEW TOKEN: ' going'
+INFO:root:NEW TOKEN: ' so'
+INFO:root:NEW TOKEN: ' far'
+INFO:root:NEW TOKEN: '?'
+INFO:root:NEW TOKEN: ''
+INFO:root:'Session ID': a10efc63-f990-40bc-9214-2063b12f7e02, User question: tell me about lab qms
+INFO:root:Routing request to RAG Answering tell me about lab qms
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Standalone question: []
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:NEW TOKEN: ''
+INFO:root:NEW TOKEN: 'It'
+INFO:root:NEW TOKEN: ' seems'
+INFO:root:NEW TOKEN: ' like'
+INFO:root:NEW TOKEN: ' the'
+INFO:root:NEW TOKEN: ' conversation'
+INFO:root:NEW TOKEN: ' just'
+INFO:root:NEW TOKEN: ' started'
+INFO:root:NEW TOKEN: '.'
+INFO:root:NEW TOKEN: ' The'
+INFO:root:NEW TOKEN: ' user'
+INFO:root:NEW TOKEN: ' said'
+INFO:root:NEW TOKEN: ' "'
+INFO:root:NEW TOKEN: 'hey'
+INFO:root:NEW TOKEN: '"'
+INFO:root:NEW TOKEN: ' and'
+INFO:root:NEW TOKEN: ' I'
+INFO:root:NEW TOKEN: ' responded'
+INFO:root:NEW TOKEN: ' with'
+INFO:root:NEW TOKEN: ' "'
+INFO:root:NEW TOKEN: 'How'
+INFO:root:NEW TOKEN: "'s"
+INFO:root:NEW TOKEN: ' your'
+INFO:root:NEW TOKEN: ' day'
+INFO:root:NEW TOKEN: ' going'
+INFO:root:NEW TOKEN: ' so'
+INFO:root:NEW TOKEN: ' far'
+INFO:root:NEW TOKEN: '?"'
+INFO:root:NEW TOKEN: ''
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': f0f00622-2394-4224-aca0-f347a3234382, User question: hello, what can you do for me
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': f0f00622-2394-4224-aca0-f347a3234382, User question: lets start with quality control
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': 369158e2-01c0-4ee8-8af4-7de2bb7edd61, User question: hi
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 369158e2-01c0-4ee8-8af4-7de2bb7edd61, User question: tell me about uncertainty of measurement
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': b6f04179-8634-4150-bed2-ec74eee571d7, User question: hi
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': b6f04179-8634-4150-bed2-ec74eee571d7, User question: tell me about Lab QMS
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': b6f04179-8634-4150-bed2-ec74eee571d7, User question: what is the response
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': 59fa85b0-0444-4077-9f4b-eb0fecb6a13e, User question: HELLO
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 59fa85b0-0444-4077-9f4b-eb0fecb6a13e, User question: tell me about uncertainty of measurement
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
+INFO:root:Application Initialization complete
+INFO:root:'Session ID': 59fa85b0-0444-4077-9f4b-eb0fecb6a13e, User question: HI
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:'Session ID': 59fa85b0-0444-4077-9f4b-eb0fecb6a13e, User question: TELL ME ABOUT LAB QMS
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:root:Application Shutdown
