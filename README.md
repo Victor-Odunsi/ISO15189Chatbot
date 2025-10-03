@@ -33,8 +33,9 @@ The chatbot retrieves the relevant clause, generates an easy-to-understand expla
 ## 🚀 Getting Started  
 
 ### Prerequisites  
-- Python 3.10+  
-- OpenAI API key  
+- Python 3.11.9  
+- GROQ API key
+- MISTRALAI API Key
 
 ### Installation  
 ```bash
