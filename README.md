@@ -8,6 +8,8 @@ This project uses **Retrieval-Augmented Generation (RAG)** to build a chatbot th
 
 The chatbot retrieves the relevant clause, generates an easy-to-understand explanation, and provides reference to the official text.  
 
+👉 **[Live Demo](http://13.62.69.28:8501/)**  
+
 ---
 
 ## ⚡ Features  
