@@ -33,7 +33,7 @@ app = FastAPI(lifespan=lifespan)
 app.state.limiter = limiter
 app.add_middleware(SlowAPIMiddleware)
 
-frontend_origin = os.getenv('FRONTEND_ORIGIN', 'http://localhost:8501')
+frontend_origin = os.getenv('FRONTEND_ORIGIN', 'http://localhost:3000')
 
 app.add_middleware(
     CORSMiddleware,

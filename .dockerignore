@@ -1,0 +1,11 @@
+node_modules
+.next
+__pycache__
+*.pyc
+.venv
+venv
+.git
+.env
+chroma_db
+backend/chroma_db
+backend/app.log

@@ -24,7 +24,9 @@ services:
     volumes:
       - ./backend/chroma_db:/app/chroma_db
     environment:
-      - FRONTEND_ORIGIN=http://frontend:8501
+      # Must be the browser-reachable origin (what the browser's Origin
+      # header actually is), not a docker-internal service hostname.
+      - FRONTEND_ORIGIN=http://localhost:3000
       - CHROMA_PERSIST_DIR=/app/chroma_db
       - DATABASE_URL=postgresql+asyncpg://iso15189:iso15189@postgres:5432/iso15189
     depends_on:
@@ -36,11 +38,13 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
     ports:
-      - "8501:8501"
+      - "3000:3000"
     depends_on:
       - backend
     environment:
-      - API_URL=http://backend:8000
+      # Must be browser-reachable -- fetch() calls run in the user's
+      # browser, not inside the frontend container's network.
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
 
 volumes:
   postgres_data:
