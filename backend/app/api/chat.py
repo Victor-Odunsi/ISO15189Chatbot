@@ -1,91 +1,83 @@
-import json
-import re
-import uuid
 import asyncio
+import json
 import logging
+import uuid
 
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 
 from app.core.security import limiter
-from app.db.repository import get_chat_history, insert_message
+from app.db.repository import delete_session, get_chat_history, insert_message
 from app.models.schemas import QueryInput
-from app.services.chain import get_chat_agent, DummyHandler
+from app.services.chain import (
+    analyze_query,
+    build_citations,
+    format_context,
+    get_generation_chain,
+    retrieve_context,
+)
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 
+def _sse(event: str, data: dict) -> bytes:
+    return f"event: {event}\ndata: {json.dumps(data)}\n\n".encode("utf-8")
+
+
 @router.post('/chat')
 @limiter.limit("15/minute")
 async def chat(request: Request, query: QueryInput):
     session_id = query.session_id or str(uuid.uuid4())
-    logger.info(f"'Session ID': {session_id}, User question: {query.question}")
+    logger.info(f"Session ID: {session_id}, User question: {query.question}")
 
     chat_history = await get_chat_history(session_id)
-    handler = DummyHandler()
-    chat_agent = get_chat_agent(session_id, handler)
 
-    async def token_generator():
+    async def event_stream():
         full_answer = ""
         try:
-            yield (json.dumps({"type": "session", "session_id": session_id}) + "\n").encode("utf-8")
+            yield _sse("session", {"session_id": session_id})
 
-            try:
-                result = await chat_agent.ainvoke({
-                    'input': query.question,
-                    'chat_history': chat_history
-                })
+            analysis = await analyze_query(query.question, chat_history)
+            documents = await asyncio.to_thread(retrieve_context, analysis.standalone_question)
+            context = format_context(documents)
+            citations = build_citations(documents)
 
-                # Try multiple ways to get the answer
-                full_response = ""
+            yield _sse("citations", {"citations": citations})
 
-                # Method 1: Check if handler captured tool output
-                if hasattr(handler, 'found_answer') and handler.found_answer:
-                    full_response = handler.final_answer
+            generation_chain = get_generation_chain(analysis.intent)
+            async for chunk in generation_chain.astream({
+                "context": context,
+                "standalone_question": analysis.standalone_question,
+                "chat_history": chat_history,
+            }):
+                full_answer += chunk
+                yield _sse("token", {"content": chunk})
 
-                # Method 2: Extract from result
-                elif isinstance(result, dict):
-                    full_response = result.get('output', '') or result.get('answer', '')
-
-                # Method 3: Extract from captured output
-                elif hasattr(handler, 'captured_output') and handler.captured_output:
-                    if "Final Answer:" in handler.captured_output:
-                        full_response = handler.captured_output.split("Final Answer:")[-1].strip()
-                    elif "'output':" in handler.captured_output:
-                        # Extract from the observation directly
-                        match = re.search(r"'output':\s*\"([^\"]+)\"", handler.captured_output)
-                        if match:
-                            full_response = match.group(1)
-
-                # Fallback
-                if not full_response:
-                    full_response = "I found information but couldn't format the response properly. Please try again."
-
-            except Exception as e:
-                full_response = "I encountered an error processing your request. Please try again."
-                logger.error(f"Agent error: {e}")
-
-            # Stream the response
-            if full_response:
-                # Split by lines to preserve paragraphs and bullet points
-                for line in full_response.splitlines(keepends=True):
-                    stripped_line = line.strip()
-                    if stripped_line:
-                        # Stream word by word for pseudo-streaming
-                        for word in stripped_line.split():
-                            full_answer += word + " "
-                            yield (json.dumps({"type": "token", "content": word + " "}) + "\n").encode("utf-8")
-                            await asyncio.sleep(0.03)
-                    # Send newline after each line to preserve paragraphs/bullets
-                    full_answer += "\n"
+            yield _sse("end", {})
 
         except Exception as e:
-            logger.error(f"Error: {e}")
+            logger.error(f"Chat error: {e}")
+            yield _sse("error", {"message": "Something went wrong generating a response. Please try again."})
         finally:
             await insert_message(session_id, "user", query.question)
-            await insert_message(session_id, "assistant", full_answer)
-            yield (json.dumps({"type": "end"}) + "\n").encode("utf-8")
+            if full_answer:
+                await insert_message(session_id, "assistant", full_answer)
 
-    return StreamingResponse(token_generator(), media_type='application/x-ndjson')
+    return StreamingResponse(
+        event_stream(),
+        media_type='text/event-stream',
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+@router.get('/sessions/{session_id}/messages')
+async def list_session_messages(session_id: str):
+    return await get_chat_history(session_id)
+
+
+@router.delete('/sessions/{session_id}')
+async def remove_session(session_id: str):
+    await delete_session(session_id)
+    return {"status": "deleted"}

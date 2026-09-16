@@ -1,248 +1,103 @@
-import asyncio
 import logging
 
-from langchain.tools import tool
-from langchain_mistralai import ChatMistralAI
-from langchain.chains import create_history_aware_retriever, create_retrieval_chain
-from langchain.prompts import ChatPromptTemplate
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.agents import initialize_agent, AgentType
-from langchain.callbacks.base import BaseCallbackHandler
+from langchain_core.documents import Document
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import Runnable
 
-from app.db.repository import get_chat_history
-from app.services.retrieval import get_chroma
-from app.services.llm import get_llm, get_streaming_llm
+from app.models.schemas import QueryAnalysis
+from app.services.llm import get_llm
+from app.services.retrieval import hybrid_retrieve
 
 logger = logging.getLogger(__name__)
 
-template = ChatPromptTemplate.from_messages(
-    [
-        ("system", '''
-        Given a chat history and a latest question which might need context from the chat history,
-        formulate a standalone question that can be understood without the chat history.
-        DO NOT answer the question. Only reformulate the question if needed or leave as is
-        '''),
-        ('placeholder', '{chat_history}'),
-        ("human", "{input}"),
-    ]
-)
-
-vectorDB = get_chroma()
-retriever = vectorDB.as_retriever(search_kwargs={'k': 2})
-history_aware_retriever = create_history_aware_retriever(
-    llm=get_llm(),
-    retriever=retriever,
-    prompt=template
-)
-
-qa_prompt = ChatPromptTemplate.from_messages([
-    ("system", """You are an ISO 15189 expert assistant. Your job is to answer questions and create outputs
-strictly using the retrieved context provided from the RAG pipeline.
-
-Rules for using retrieved documents:
-- ALWAYS ground your answers in the retrieved ISO 15189 content. Do not make up or assume anything.
-- If the retrieved context is insufficient, clearly say you cannot find relevant information.
-- NEVER use outside knowledge beyond what is retrieved.
-- When formatting answers, keep the style professional, concise, and aligned with ISO 15189 standards.
-
-Output requirements:
-- If the user asks for a general explanation: provide a direct, well-structured answer using only retrieved content.
-- If the user asks for a checklist: convert the retrieved information into a clear, actionable checklist format.
-- If the user asks for an SOP: structure the answer into **Purpose, Scope, Responsibilities, Procedure, and References**.
-- Always ensure the final text is clean and ready for the user, without mentioning retrieval steps or tool usage.
-
-If unsure, provide the most relevant retrieved information as-is, formatted clearly.
-
-Answer the user questions based on the following context: {context}
-"""),
+ANALYSIS_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", (
+        "Given a chat history and the latest user question, do two things:\n"
+        "1. Rewrite the question as a standalone question that can be understood "
+        "without the chat history. If it already stands alone, leave it as is.\n"
+        "2. Classify the user's intent: 'general' for a direct question or "
+        "explanation, 'checklist' if they want an audit/compliance checklist, "
+        "'sop' if they want a Standard Operating Procedure document."
+    )),
     ('placeholder', '{chat_history}'),
     ("human", "{input}"),
 ])
 
-qa_chain = create_stuff_documents_chain(
-    llm=get_llm(),
-    prompt=qa_prompt
-)
+GENERAL_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", """You are an ISO 15189 expert assistant. Answer strictly using the
+retrieved context below — ground every claim in it, and never use outside
+knowledge. If the context is insufficient to answer, say so plainly.
+Keep the style professional and concise.
 
-retrieval_chain = create_retrieval_chain(
-    retriever=history_aware_retriever,
-    combine_docs_chain=qa_chain
-)
+Context:
+{context}
+"""),
+    ('placeholder', '{chat_history}'),
+    ("human", "{standalone_question}"),
+])
 
-model = get_llm()
+CHECKLIST_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", """You are an ISO 15189 internal audit checklist generator. Convert
+the retrieved context below into a practical, numbered checklist of concise
+yes/no compliance questions, grouped into sections if the content is long.
+Use only the retrieved context — never outside knowledge.
 
+Context:
+{context}
+"""),
+    ('placeholder', '{chat_history}'),
+    ("human", "{standalone_question}"),
+])
 
-def make_rag_answer_tool(session_id: str):
-    @tool('rag_answer')
-    def rag_answer(question: str):
-        """
-        Answer ISO 15189 questions using the RAG pipeline.
-        Args:
-          question: the user's question
-        Returns:
-          answer text string
-        """
-        # get_chat_history is async (Postgres via SQLAlchemy); these tools run
-        # synchronously in the agent's worker thread, so bridge with asyncio.run.
-        # This whole agent is replaced by the LCEL chain in the next phase.
-        chat_history = asyncio.run(get_chat_history(session_id))
-        result = retrieval_chain.invoke(
-            {
-                'input': question,
-                'chat_history': chat_history
-            }
-        )
-        answer = result['answer'] if isinstance(result, dict) else str(result)
+SOP_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", """You are an ISO 15189 SOP author. Convert the retrieved context
+below into a polished Standard Operating Procedure with these sections:
+Purpose, Scope, Responsibilities, Procedure, and References. Use only the
+retrieved context — never outside knowledge.
 
-        return {'output': answer}
-    return rag_answer
+Context:
+{context}
+"""),
+    ('placeholder', '{chat_history}'),
+    ("human", "{standalone_question}"),
+])
 
-
-def make_create_checklist(session_id: str):
-    @tool('create_checklist')
-    def create_checklist(question: str):
-        """
-        Converts retrieved ISO 15189 text into a practical checklist
-        using LLM + retrieval pipeline.
-        """
-        # get_chat_history is async (Postgres via SQLAlchemy); these tools run
-        # synchronously in the agent's worker thread, so bridge with asyncio.run.
-        # This whole agent is replaced by the LCEL chain in the next phase.
-        chat_history = asyncio.run(get_chat_history(session_id))
-        retrieved = retrieval_chain.invoke(
-            {"input": question, "chat_history": chat_history}
-        )
-
-        retrieved_text = (
-            retrieved.get("answer")
-            if isinstance(retrieved, dict)
-            else str(retrieved)
-        )
-
-        prompt = f"""
-        You are an ISO 15189 Internal Audit Checklist generator.
-        Your task is to convert the following standard text into a practical checklist.
-
-        Guidelines:
-        - Write concise yes/no style questions.
-        - Focus on compliance, documentation, staff competency, and process adherence.
-        - Number the questions.
-        - Group into logical sections if the content is long.
-
-        Context:
-        {retrieved_text}
-
-        Checklist:
-        """
-        raw_output = model.invoke(prompt)
-
-        # make sure we only store string content
-        checklist_text = raw_output.content if hasattr(raw_output, "content") else str(raw_output)
-
-        return {'output': checklist_text}
-    return create_checklist
+_GENERATION_PROMPTS = {
+    "general": GENERAL_PROMPT,
+    "checklist": CHECKLIST_PROMPT,
+    "sop": SOP_PROMPT,
+}
 
 
-@tool('final_answer')
-def final_answer(answer: str):
-    """
-    Provide the final answer to the user. Use this tool IMMEDIATELY after getting information from rag_answer or create_checklist.
-    Args:
-      answer: the final answer to provide to the user (clean text without mentioning tools or actions)
-    Returns:
-      the final answer
-    """
-    return answer
+async def analyze_query(question: str, chat_history: list[dict]) -> QueryAnalysis:
+    chain = ANALYSIS_PROMPT | get_llm().with_structured_output(QueryAnalysis)
+    return await chain.ainvoke({"input": question, "chat_history": chat_history})
 
 
-@tool('format_sop')
-def format_sop(raw_text: str) -> str:
-    """
-    Takes raw draft content (e.g., from rag_answer) and formats it into a
-    polished, structured SOP according to ISO 15189 style.
-    Always include Purpose, Scope, Responsibilities, Procedure, and References sections.
-    """
-    llm = ChatMistralAI(model="mistral-tiny", temperature=0)
-    response = llm.invoke(f"Format the following draft into a professional SOP:\n\n{raw_text}")
-    return response.content
+def retrieve_context(standalone_question: str) -> list[Document]:
+    return hybrid_retrieve(standalone_question)
 
 
-class DummyHandler(BaseCallbackHandler):
-    def __init__(self):
-        self.captured_output = ""   # For internal tool output capture
-        self.final_answer_output = ""  # Only what should go to UI
-        self.found_answer = False
-        self.final_answer_called = False
-
-    def on_llm_new_token(self, token: str, **kwargs) -> None:
-        tool_name = kwargs.get("tool_name")
-        # Only append tokens from final_answer tool for streaming
-        if tool_name == "final_answer":
-            self.final_answer_output += token
-        else:
-            self.captured_output += token
-
-    def on_tool_end(self, output, **kwargs) -> None:
-        tool_name = kwargs.get("tool_name")
-
-        # Mark if a final_answer tool was called
-        if tool_name == "final_answer":
-            self.final_answer_called = True
-            if isinstance(output, dict) and "output" in output:
-                self.final_answer_output += output["output"]
-            else:
-                self.final_answer_output += str(output)
-        else:
-            # Capture other tool outputs (rag_answer / format_sop)
-            if isinstance(output, dict) and "output" in output:
-                self.captured_output += output["output"]
-            else:
-                self.captured_output += str(output)
+def format_context(documents: list[Document]) -> str:
+    return "\n\n".join(doc.page_content for doc in documents)
 
 
-def get_chat_agent(session_id: str, handler):
-    rag_tool = make_rag_answer_tool(session_id)
-    checklist_tool = make_create_checklist(session_id)
+def build_citations(documents: list[Document]) -> list[dict]:
+    seen = set()
+    citations = []
+    for doc in documents:
+        source = doc.metadata.get("source", "unknown")
+        page = doc.metadata.get("page")
+        page_number = page + 1 if isinstance(page, int) else None  # PyPDFLoader pages are 0-indexed
+        key = (source, page_number)
+        if key in seen:
+            continue
+        seen.add(key)
+        citations.append({"source": source, "page": page_number})
+    return citations
 
-    streaming_model = get_streaming_llm(callbacks=[handler])
 
-    agent = initialize_agent(
-        tools=[rag_tool, checklist_tool, final_answer, format_sop],
-        llm=streaming_model,
-        agent=AgentType.CONVERSATIONAL_REACT_DESCRIPTION,
-        verbose=True,
-        return_intermediate_steps=False,
-        max_iterations=3,
-        early_stopping_method="generate",
-        max_execution_time=60,
-        handle_parsing_errors=True,
-        agent_kwargs={
-            'prefix': """You are an ISO 15189 expert assistant.
-
-Tool usage rules:
-- ALWAYS call the `rag_answer` tool first for any question related
-  to ISO 15189, laboratory standards, quality management, clauses, or measurement procedures.
-- Use the `create_checklist` tool ONLY when the user explicitly asks
-  for a checklist or audit checklist.
-- After retrieving raw content with `rag_answer`, use the `format_sop` tool
-  whenever the user's request is an SOP or requires professional formatting.
-- Use the `final_answer` tool to produce the clean, user-facing output, NOT JUST A SUMMARY
-- NEVER answer from your own knowledge base. Use only content from the tools.
-- NEVER return an answer without calling the correct tools.
-- Do not use `create_checklist` for SOPs or general explanations.
-- If a user asks for a PDF or Word document, politely explain that you only provide text output.
-- Always decide the best tool according to the request.
-- If you are unsure, default to `rag_answer`.
-
-CRITICAL formatting rules:
-1. You MUST call tools in this order for SOP requests:
-   rag_answer → format_sop → final_answer
-2. For non-SOP requests: rag_answer → final_answer
-3. NEVER include the words "Thought:", "Action:", "Action Input:", "Observation:", tool names, or intermediate reasoning in your final output.
-4. Provide ONLY the HELPFUL, formatted answer directly.
-5. STOP immediately after giving the final answer.
-"""
-        },
-        callbacks=[handler]
-    )
-    return agent
+def get_generation_chain(intent: str) -> Runnable:
+    prompt = _GENERATION_PROMPTS.get(intent, GENERAL_PROMPT)
+    return prompt | get_llm() | StrOutputParser()
