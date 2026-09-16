@@ -12,6 +12,12 @@ venv/
 chroma_db/
 backend/ISO15189
 
+# Source documents are typically licensed/copyrighted (e.g. the ISO
+# 15189 standard itself) -- never commit them, keep the folder tracked
+data/*
+!data/.gitkeep
+!data/README.md
+
 # Env
 .env
 .env.local
