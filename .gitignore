@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Logs
+*.log
+
+# Vector store / chat DB (regenerate via ingestion; DB URL comes from Postgres, not sqlite)
+chroma_db/
+backend/ISO15189
+
+# Env
+.env
+.env.local
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+
+# OS
+.DS_Store
