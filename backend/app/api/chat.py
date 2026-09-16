@@ -8,7 +8,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 
 from app.core.security import limiter
-from app.db.repository import get_chat_history, insert_application_logs
+from app.db.repository import get_chat_history, insert_message
 from app.models.schemas import QueryInput
 from app.services.chain import get_chat_agent, DummyHandler
 
@@ -23,7 +23,7 @@ async def chat(request: Request, query: QueryInput):
     session_id = query.session_id or str(uuid.uuid4())
     logger.info(f"'Session ID': {session_id}, User question: {query.question}")
 
-    chat_history = get_chat_history(session_id)
+    chat_history = await get_chat_history(session_id)
     handler = DummyHandler()
     chat_agent = get_chat_agent(session_id, handler)
 
@@ -84,7 +84,8 @@ async def chat(request: Request, query: QueryInput):
         except Exception as e:
             logger.error(f"Error: {e}")
         finally:
-            insert_application_logs(session_id, query.question, full_answer)
+            await insert_message(session_id, "user", query.question)
+            await insert_message(session_id, "assistant", full_answer)
             yield (json.dumps({"type": "end"}) + "\n").encode("utf-8")
 
     return StreamingResponse(token_generator(), media_type='application/x-ndjson')

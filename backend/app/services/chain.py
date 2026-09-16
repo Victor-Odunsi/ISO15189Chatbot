@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from langchain.tools import tool
@@ -81,7 +82,10 @@ def make_rag_answer_tool(session_id: str):
         Returns:
           answer text string
         """
-        chat_history = get_chat_history(session_id)
+        # get_chat_history is async (Postgres via SQLAlchemy); these tools run
+        # synchronously in the agent's worker thread, so bridge with asyncio.run.
+        # This whole agent is replaced by the LCEL chain in the next phase.
+        chat_history = asyncio.run(get_chat_history(session_id))
         result = retrieval_chain.invoke(
             {
                 'input': question,
@@ -101,7 +105,10 @@ def make_create_checklist(session_id: str):
         Converts retrieved ISO 15189 text into a practical checklist
         using LLM + retrieval pipeline.
         """
-        chat_history = get_chat_history(session_id)
+        # get_chat_history is async (Postgres via SQLAlchemy); these tools run
+        # synchronously in the agent's worker thread, so bridge with asyncio.run.
+        # This whole agent is replaced by the LCEL chain in the next phase.
+        chat_history = asyncio.run(get_chat_history(session_id))
         retrieved = retrieval_chain.invoke(
             {"input": question, "chat_history": chat_history}
         )

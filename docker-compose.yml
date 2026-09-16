@@ -1,4 +1,18 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=iso15189
+      - POSTGRES_PASSWORD=iso15189
+      - POSTGRES_DB=iso15189
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iso15189"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: .
@@ -8,10 +22,14 @@ services:
     env_file:
       - .env
     volumes:
-      - ./chroma_db:/app/chroma_db
+      - ./backend/chroma_db:/app/chroma_db
     environment:
       - FRONTEND_ORIGIN=http://frontend:8501
       - CHROMA_PERSIST_DIR=/app/chroma_db
+      - DATABASE_URL=postgresql+asyncpg://iso15189:iso15189@postgres:5432/iso15189
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   frontend:
     build:
@@ -23,3 +41,6 @@ services:
       - backend
     environment:
       - API_URL=http://backend:8000
+
+volumes:
+  postgres_data:

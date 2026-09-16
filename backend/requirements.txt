@@ -1,10 +1,12 @@
 aiohappyeyeballs==2.6.1
 aiohttp==3.12.15
 aiosignal==1.4.0
+alembic==1.13.3
 altair==5.5.0
 annotated-types==0.7.0
 anyio==4.10.0
 asttokens==3.0.0
+asyncpg==0.30.0
 attrs==25.3.0
 backoff==2.2.1
 bcrypt==4.3.0

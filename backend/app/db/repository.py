@@ -1,69 +1,33 @@
-import sqlite3
+from sqlalchemy import delete, select
 
-DB_NAME = 'ISO15189'
-
-
-def get_db_connection():
-    conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row
-    return conn
+from app.db.models import Message
+from app.db.session import AsyncSessionLocal
 
 
-def create_application_logs():
-    conn = get_db_connection()
-    conn.execute(
-        """
-        CREATE TABLE IF NOT EXISTS application_logs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            session_id TEXT,
-            user_question TEXT,
-            gpt_answer TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+async def get_chat_history(session_id: str) -> list[dict]:
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(Message.role, Message.content)
+            .where(Message.session_id == session_id)
+            .order_by(Message.id)
         )
-        """
-    )
-    conn.commit()
-    conn.close()
+        return [{"role": role, "content": content} for role, content in result.all()]
 
 
-def insert_application_logs(session_id, user_question, gpt_answer):
+async def insert_message(session_id: str, role: str, content) -> None:
+    if hasattr(content, "content"):
+        content = content.content
+    elif isinstance(content, dict):
+        content = str(content.get("output"))
+    elif not isinstance(content, str):
+        content = str(content)
 
-    if hasattr(gpt_answer, "content"):
-        gpt_answer = gpt_answer.content
-    elif isinstance(gpt_answer, dict):
-        gpt_answer = str(gpt_answer.get("output"))
-    elif not isinstance(gpt_answer, str):
-        gpt_answer = str(gpt_answer)
-
-    conn = get_db_connection()
-    conn.execute(
-        """
-        INSERT INTO application_logs (session_id, user_question, gpt_answer)
-        VALUES (?, ?, ?)
-        """,
-        (str(session_id), str(user_question), str(gpt_answer))
-    )
-    conn.commit()
-    conn.close()
+    async with AsyncSessionLocal() as session:
+        session.add(Message(session_id=str(session_id), role=role, content=content))
+        await session.commit()
 
 
-def get_chat_history(session_id):
-    conn = get_db_connection()
-    rows = conn.execute(
-        """
-        SELECT user_question, gpt_answer
-        FROM application_logs
-        WHERE session_id = ?
-        """,
-        (session_id,)
-    )
-    messages = []
-    for row in rows.fetchall():
-        messages.append({"role": "user", "content": row["user_question"]})
-        messages.append({"role": "assistant", "content": row["gpt_answer"]})
-
-    conn.close()
-    return messages
-
-
-create_application_logs()
+async def delete_session(session_id: str) -> None:
+    async with AsyncSessionLocal() as session:
+        await session.execute(delete(Message).where(Message.session_id == session_id))
+        await session.commit()
