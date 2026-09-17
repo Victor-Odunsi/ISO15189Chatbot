@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi.middleware import SlowAPIMiddleware
 
 from app.core.security import limiter
-from app.services.retrieval import get_chroma
 from app.api.chat import router as chat_router
 from app.api.admin import router as admin_router
 
@@ -16,15 +15,11 @@ logging.basicConfig(filename='app.log', level=logging.INFO)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Schema is managed by Alembic migrations (`alembic upgrade head`),
-    # not created here — see backend/alembic/.
-    try:
-        chromadb_instance = get_chroma()
-        if chromadb_instance is None:
-            logging.info('Chroma DB not loaded')
-        logging.info('Application Initialization complete')
-    except Exception as e:
-        logging.error(f'Error initializing Application: {e}')
+    # Schema (including pgvector's `chunks` table) is managed by Alembic
+    # migrations (`alembic upgrade head`), not created here — see
+    # backend/alembic/. Dense/sparse retrieval connect lazily on first use,
+    # so there's nothing to eagerly initialize at startup.
+    logging.info('Application Initialization complete')
     yield
     logging.info('Application Shutdown')
 

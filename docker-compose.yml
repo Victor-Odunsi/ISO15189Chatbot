@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     environment:
       - POSTGRES_USER=iso15189
       - POSTGRES_PASSWORD=iso15189
@@ -21,13 +21,10 @@ services:
       - "8000:8000"
     env_file:
       - .env
-    volumes:
-      - ./backend/chroma_db:/app/chroma_db
     environment:
       # Must be the browser-reachable origin (what the browser's Origin
       # header actually is), not a docker-internal service hostname.
       - FRONTEND_ORIGIN=http://localhost:3000
-      - CHROMA_PERSIST_DIR=/app/chroma_db
       - DATABASE_URL=postgresql+asyncpg://iso15189:iso15189@postgres:5432/iso15189
     depends_on:
       postgres:

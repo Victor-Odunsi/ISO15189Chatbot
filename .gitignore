@@ -8,10 +8,6 @@ venv/
 # Logs
 *.log
 
-# Vector store / chat DB (regenerate via ingestion; DB URL comes from Postgres, not sqlite)
-chroma_db/
-backend/ISO15189
-
 # Source documents are typically licensed/copyrighted (e.g. the ISO
 # 15189 standard itself) -- never commit them, keep the folder tracked
 data/*
