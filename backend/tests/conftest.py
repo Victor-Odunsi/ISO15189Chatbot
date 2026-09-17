@@ -1,5 +1,7 @@
 import os
 
+import pytest
+
 # app.core.config raises ValueError at import time if these are missing --
 # set harmless placeholders before any test imports the app, since tests
 # never make real LLM calls (they mock at the app.api.chat boundary).
@@ -7,7 +9,19 @@ os.environ.setdefault("GROQ_API_KEY", "test-key")
 os.environ.setdefault("MISTRALAI_API_KEY", "test-key")
 os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://test:test@localhost:5432/test")
 os.environ.setdefault("S3_BUCKET", "test-bucket")
+os.environ.setdefault("ADMIN_API_KEY", "test-admin-key")
 # In-memory rate-limit storage for tests -- production uses Redis (see
 # app.core.config.redis_url) so limits are shared across concurrent
 # processes, but tests shouldn't need a real Redis instance to pass.
 os.environ.setdefault("REDIS_URL", "memory://")
+
+
+@pytest.fixture(autouse=True)
+def _reset_rate_limiter():
+    """Rate-limit state is a shared singleton (app.core.security.limiter);
+    without resetting it, tests that hit rate-limited routes multiple times
+    across the suite would trip each other's limits."""
+    from app.core.security import limiter
+
+    limiter.limiter.storage.reset()
+    yield

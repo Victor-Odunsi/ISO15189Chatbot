@@ -15,6 +15,7 @@ sync_database_url = database_url.replace('+asyncpg', '+psycopg')
 
 s3_bucket = os.getenv('S3_BUCKET')
 aws_region = os.getenv('AWS_REGION', 'us-east-1')
+sqs_queue_url = os.getenv('SQS_QUEUE_URL')
 
 # Rate-limit storage: Redis-backed so limits are shared across concurrent
 # Lambda invocations (separate processes with no shared memory), not just
