@@ -13,6 +13,14 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: .
@@ -26,8 +34,11 @@ services:
       # header actually is), not a docker-internal service hostname.
       - FRONTEND_ORIGIN=http://localhost:3000
       - DATABASE_URL=postgresql+asyncpg://iso15189:iso15189@postgres:5432/iso15189
+      - REDIS_URL=redis://redis:6379
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   frontend:

@@ -5,6 +5,8 @@ from fastapi import HTTPException, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
+from app.core.config import redis_url
+
 TRUSTED_PROXY = os.getenv("TRUSTED_PROXY", "false").lower() == "true"
 ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "")
 
@@ -23,7 +25,7 @@ def get_proxied_remote_address(request: Request) -> str:
     return get_remote_address(request)
 
 
-limiter = Limiter(key_func=get_proxied_remote_address)
+limiter = Limiter(key_func=get_proxied_remote_address, storage_uri=redis_url)
 
 
 def require_admin_key(request: Request) -> None:

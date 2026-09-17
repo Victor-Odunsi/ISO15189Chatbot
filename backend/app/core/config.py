@@ -16,6 +16,11 @@ sync_database_url = database_url.replace('+asyncpg', '+psycopg')
 s3_bucket = os.getenv('S3_BUCKET')
 aws_region = os.getenv('AWS_REGION', 'us-east-1')
 
+# Rate-limit storage: Redis-backed so limits are shared across concurrent
+# Lambda invocations (separate processes with no shared memory), not just
+# per-container as an in-memory limiter would be.
+redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379')
+
 if not groq_api_key:
     raise ValueError("GROQ_API_KEY not found in environment variables")
 
