@@ -23,5 +23,9 @@ node_modules/
 .next/
 out/
 
+# AWS SAM build artifacts / local deploy config
+.aws-sam/
+samconfig.toml
+
 # OS
 .DS_Store

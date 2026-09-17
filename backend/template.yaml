@@ -1,0 +1,109 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  ISO 15189 Chatbot backend -- a streaming API function (FastAPI + Lambda
+  Web Adapter, behind a Function URL in RESPONSE_STREAM mode) and a
+  separate SQS-triggered ingestion worker. Postgres (pgvector), the S3
+  bucket, and Redis are assumed to already exist -- this template only
+  provisions what's specific to this Lambda architecture.
+
+Parameters:
+  DatabaseUrl:
+    Type: String
+    NoEcho: true
+    Description: postgresql+asyncpg://... pointing at an existing Postgres instance with pgvector enabled
+  S3Bucket:
+    Type: String
+    Description: Existing S3 bucket for the BM25 corpus and uploaded source documents
+  RedisUrl:
+    Type: String
+    NoEcho: true
+    Description: redis://... for rate-limit storage (e.g. an existing ElastiCache or Upstash instance)
+  GroqApiKey:
+    Type: String
+    NoEcho: true
+  MistralApiKey:
+    Type: String
+    NoEcho: true
+  AdminApiKey:
+    Type: String
+    NoEcho: true
+  FrontendOrigin:
+    Type: String
+    Description: Browser-facing origin of the Vercel-deployed frontend, for CORS
+
+Resources:
+  IngestQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: iso15189-ingest-queue
+      # Should stay >= IngestWorkerFunction's Timeout below, so a message
+      # can't become visible again (and get redelivered) while still being
+      # processed by the worker that first picked it up.
+      VisibilityTimeout: 300
+
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      MemorySize: 1536
+      Timeout: 60
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: RESPONSE_STREAM
+      Environment:
+        Variables:
+          AWS_LWA_INVOKE_MODE: RESPONSE_STREAM
+          AWS_LWA_PORT: "8000"
+          DATABASE_URL: !Ref DatabaseUrl
+          S3_BUCKET: !Ref S3Bucket
+          SQS_QUEUE_URL: !Ref IngestQueue
+          REDIS_URL: !Ref RedisUrl
+          GROQ_API_KEY: !Ref GroqApiKey
+          MISTRALAI_API_KEY: !Ref MistralApiKey
+          ADMIN_API_KEY: !Ref AdminApiKey
+          FRONTEND_ORIGIN: !Ref FrontendOrigin
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref S3Bucket
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt IngestQueue.QueueName
+    Metadata:
+      DockerContext: ..
+      Dockerfile: backend/Dockerfile
+
+  IngestWorkerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      MemorySize: 1536
+      Timeout: 240
+      Events:
+        SqsIngest:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt IngestQueue.Arn
+            BatchSize: 1
+      Environment:
+        Variables:
+          DATABASE_URL: !Ref DatabaseUrl
+          S3_BUCKET: !Ref S3Bucket
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref S3Bucket
+        - SQSPollerPolicy:
+            QueueName: !GetAtt IngestQueue.QueueName
+    Metadata:
+      DockerContext: ..
+      Dockerfile: backend/Dockerfile.worker
+
+Outputs:
+  ApiFunctionUrl:
+    Description: Browser/frontend-facing streaming endpoint (set as NEXT_PUBLIC_API_URL on Vercel)
+    # SAM implicitly creates an AWS::Lambda::Url resource named
+    # "<FunctionLogicalId>Url" when FunctionUrlConfig is set on the
+    # function -- this refers to that generated resource, not ApiFunction
+    # itself (AWS::Serverless::Function has no FunctionUrl attribute).
+    Value: !GetAtt ApiFunctionUrl.FunctionUrl
+  IngestQueueUrl:
+    Value: !Ref IngestQueue

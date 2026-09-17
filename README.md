@@ -13,30 +13,33 @@ This project uses **Retrieval-Augmented Generation (RAG)** to build a chatbot th
 
 ## Features
 
-- Hybrid retrieval: dense (Chroma) + sparse (BM25) search, merged with Reciprocal Rank Fusion and reranked with a local cross-encoder
+- Hybrid retrieval: dense (pgvector) + sparse (BM25) search, merged with Reciprocal Rank Fusion and reranked with a local cross-encoder
 - Query rewriting and intent classification (general question / checklist / SOP) via a single structured-output LLM call
 - Real token-by-token streaming (Server-Sent Events), with source citations delivered before the answer streams in
 - Persistent, multi-session chat history (Postgres), with a Next.js UI for browsing and resuming past conversations
-- Admin endpoint for incrementally ingesting new source documents, protected by a shared secret
+- Admin endpoint for queuing new source documents for ingestion, protected by a shared secret
 
 ---
 
 ## Architecture
 
 ```
-frontend/   Next.js (App Router, TypeScript, Tailwind) — chat UI, SSE client
-backend/    FastAPI
+frontend/   Next.js (App Router, TypeScript, Tailwind) — chat UI, SSE client. Deployed to Vercel.
+backend/    FastAPI, deployed to AWS Lambda (Function URL, streaming) via SAM
   app/api/       routes (chat, admin, sessions)
   app/services/  hybrid retrieval, ingestion, the LCEL chain, LLM client
-  app/db/        Postgres persistence (SQLAlchemy + Alembic)
+  app/db/        Postgres (pgvector + chat history) via SQLAlchemy + Alembic
   app/core/      config, security
+  app/worker/    SQS-triggered ingestion worker (separate Lambda function)
 ```
 
-- **LLM**: Groq (`llama-3.1-8b-instant`), with Mistral as a fallback
+- **LLM**: Groq (`openai/gpt-oss-20b`), with Mistral (`mistral-small-latest`) as a fallback — both free-tier
 - **Embeddings**: `BAAI/bge-small-en` (HuggingFace, local/CPU)
 - **Reranker**: `cross-encoder/ms-marco-MiniLM-L-6-v2` (local/CPU)
-- **Vector store**: Chroma (persisted to disk)
-- **Chat history**: Postgres
+- **Vector store + chat history**: Postgres (pgvector extension)
+- **Sparse retrieval corpus**: S3 (BM25 pickle)
+- **Rate limiting**: Redis
+- **Background ingestion**: S3 upload → SQS message → separate worker Lambda (see [Deploying to AWS Lambda](#deploying-to-aws-lambda))
 
 ---
 
@@ -45,15 +48,16 @@ backend/    FastAPI
 ### Prerequisites
 
 - Python 3.11+, Node.js 20+
-- A [Groq](https://console.groq.com) API key (and optionally a [Mistral](https://mistral.ai) key as fallback)
+- A [Groq](https://console.groq.com) API key (and optionally a [Mistral](https://mistral.ai) key as fallback) — both have usable free tiers
 - Docker, if running via `docker-compose` (recommended)
+- An AWS account with an S3 bucket and SQS queue (used even for local dev — see [Local dev note](#local-dev-note-on-s3sqs) below)
 - Your own copy of the ISO 15189:2022 standard as a PDF — it's a licensed document and isn't included in this repo
 
 ### Running with Docker Compose
 
 ```bash
 cp .env.example .env
-# fill in GROQ_API_KEY / MISTRALAI_API_KEY in .env
+# fill in GROQ_API_KEY / MISTRALAI_API_KEY / S3_BUCKET / AWS credentials in .env
 
 cp your-iso-15189.pdf data/
 
@@ -62,12 +66,18 @@ docker compose up --build
 # frontend: http://localhost:3000
 ```
 
-The backend runs Alembic migrations automatically on startup. Once the stack is up, ingest your source document:
+This starts Postgres (with pgvector), Redis, the backend, and the frontend. Run migrations once against it:
 
 ```bash
-curl -X POST http://localhost:8000/admin/upload-doc/ \
-  -H "X-Admin-Key: $ADMIN_API_KEY" \
-  -F "file=@data/your-iso-15189.pdf"
+docker compose exec backend alembic upgrade head
+```
+
+#### Local dev note on S3/SQS
+
+The admin upload endpoint always uploads to S3 and queues an SQS message — there's no local-disk fallback, so local dev uses a real (free-tier) S3 bucket and SQS queue rather than an emulator. The queue's *consumer*, though, only exists once deployed (it's a separate Lambda function triggered by SQS — see below), so for local ingestion, skip the endpoint and ingest directly instead:
+
+```bash
+docker compose exec backend python -c "from app.services.ingestion import run_ingestion; run_ingestion('./data')"
 ```
 
 ### Running locally without Docker
@@ -77,7 +87,7 @@ curl -X POST http://localhost:8000/admin/upload-doc/ \
 cd backend
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp ../.env.example ../.env  # edit as needed; DATABASE_URL must point at a running Postgres instance
+cp ../.env.example ../.env  # edit as needed; DATABASE_URL must point at a Postgres instance with the pgvector extension installed, REDIS_URL at a running Redis
 alembic upgrade head
 uvicorn app.main:app --reload
 ```
@@ -91,12 +101,37 @@ npm run dev
 
 ---
 
+## Deploying to AWS Lambda
+
+The backend deploys as two Lambda functions via [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/) (`backend/template.yaml`): a streaming API function (FastAPI + [Lambda Web Adapter](https://github.com/awslabs/aws-lambda-web-adapter), behind a Function URL in `RESPONSE_STREAM` mode — real SSE streaming, not buffered) and a separate SQS-triggered ingestion worker (`backend/Dockerfile.worker`). Postgres (with pgvector), the S3 bucket, and Redis are assumed to already exist; the template takes their connection details as parameters rather than provisioning them.
+
+```bash
+cd backend
+sam build
+sam deploy --guided
+# provide: DatabaseUrl, S3Bucket, RedisUrl, GroqApiKey, MistralApiKey, AdminApiKey, FrontendOrigin
+
+# migrations are a deploy-time step, not run on cold start -- run once per deploy:
+DATABASE_URL=<your RDS url> alembic upgrade head
+```
+
+`sam deploy` prints `ApiFunctionUrl` in its outputs — set that as `NEXT_PUBLIC_API_URL` in the Vercel project settings for the frontend.
+
+**Known tradeoffs of this setup** (see the project's own notes for the fuller reasoning):
+- Models are *not* baked into the image (kept build light per this being a free/portfolio project), so each cold start pays the HuggingFace download cost for the embedding + reranker models — expect the first request after idle to be noticeably slower.
+- ElastiCache Redis needs the Lambda function in a VPC (adds cold-start latency from ENI attachment); an HTTP-based serverless Redis (e.g. Upstash) avoids that if cold starts matter more than self-hosting.
+
+---
+
 ## Tech Stack
 
 - **LangChain (LCEL)** – hybrid retrieval + generation pipeline
 - **FastAPI** – backend API, Server-Sent Events streaming
-- **Chroma + rank_bm25** – dense + sparse retrieval
+- **pgvector + rank_bm25** – dense + sparse retrieval
 - **sentence-transformers** – embeddings and cross-encoder reranking
-- **PostgreSQL + SQLAlchemy + Alembic** – chat history persistence
+- **PostgreSQL + SQLAlchemy + Alembic** – vector store and chat history persistence
+- **Redis** – shared rate-limit storage
 - **Next.js + TypeScript + Tailwind CSS** – frontend
+- **AWS Lambda + Lambda Web Adapter + SAM, S3, SQS** – backend hosting
+- **Vercel** – frontend hosting
 - **Docker Compose** – local orchestration
