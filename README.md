@@ -103,23 +103,26 @@ npm run dev
 
 ## Deploying to AWS Lambda
 
-The backend deploys as two Lambda functions via [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/) (`backend/template.yaml`): a streaming API function (FastAPI + [Lambda Web Adapter](https://github.com/awslabs/aws-lambda-web-adapter), behind a Function URL in `RESPONSE_STREAM` mode — real SSE streaming, not buffered) and a separate SQS-triggered ingestion worker (`backend/Dockerfile.worker`). Postgres (with pgvector), the S3 bucket, and Redis are assumed to already exist; the template takes their connection details as parameters rather than provisioning them.
+The backend deploys as two Lambda functions via [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/) (`backend/template.yaml`): a streaming API function (FastAPI + [Lambda Web Adapter](https://github.com/awslabs/aws-lambda-web-adapter), behind a Function URL in `RESPONSE_STREAM` mode — real SSE streaming, not buffered) and a separate SQS-triggered ingestion worker (`backend/Dockerfile.worker`). Postgres (with pgvector) and Redis are **not** AWS-native here — RDS has no meaningful free tier for this workload and ElastiCache needs a VPC (extra cold-start latency from ENI attachment), so both are external, serverless-friendly providers instead:
+
+- **Postgres**: [Supabase](https://supabase.com) (pgvector supported natively). Use the **connection pooler** string (Supavisor, transaction mode, port 6543), not the direct connection — Lambda can run many concurrent invocations, each wanting its own connection, which exhausts Postgres's connection limit fast against a direct connection. The app already disables server-side prepared statements on both engines (`app/db/session.py`) specifically because pooled connections require that.
+- **Redis**: [Upstash](https://upstash.com) — reachable without a VPC, so no ENI cold-start penalty.
+- **S3 bucket**: a plain AWS S3 bucket (the template takes its name as a parameter rather than creating it).
 
 ```bash
 cd backend
 sam build
 sam deploy --guided
-# provide: DatabaseUrl, S3Bucket, RedisUrl, GroqApiKey, MistralApiKey, AdminApiKey, FrontendOrigin
+# provide: DatabaseUrl (Supabase pooler string, postgresql+asyncpg://...), S3Bucket,
+# RedisUrl (Upstash), GroqApiKey, MistralApiKey, AdminApiKey, FrontendOrigin
 
 # migrations are a deploy-time step, not run on cold start -- run once per deploy:
-DATABASE_URL=<your RDS url> alembic upgrade head
+DATABASE_URL=<your Supabase pooler url> alembic upgrade head
 ```
 
 `sam deploy` prints `ApiFunctionUrl` in its outputs — set that as `NEXT_PUBLIC_API_URL` in the Vercel project settings for the frontend.
 
-**Known tradeoffs of this setup** (see the project's own notes for the fuller reasoning):
-- Models are *not* baked into the image (kept build light per this being a free/portfolio project), so each cold start pays the HuggingFace download cost for the embedding + reranker models — expect the first request after idle to be noticeably slower.
-- ElastiCache Redis needs the Lambda function in a VPC (adds cold-start latency from ENI attachment); an HTTP-based serverless Redis (e.g. Upstash) avoids that if cold starts matter more than self-hosting.
+**Known tradeoff**: models are *not* baked into the image (kept build light per this being a free/portfolio project), so each cold start pays the HuggingFace download cost for the embedding + reranker models — expect the first request after idle to be noticeably slower.
 
 ---
 
