@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi.middleware import SlowAPIMiddleware
 
-from app.core.security import limiter
+from app.core.security import SessionIdCaptureMiddleware, limiter
 from app.api.chat import router as chat_router
 from app.api.admin import router as admin_router
 
@@ -27,6 +27,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.state.limiter = limiter
 app.add_middleware(SlowAPIMiddleware)
+app.add_middleware(SessionIdCaptureMiddleware)
 
 frontend_origin = os.getenv('FRONTEND_ORIGIN', 'http://localhost:3000')
 
