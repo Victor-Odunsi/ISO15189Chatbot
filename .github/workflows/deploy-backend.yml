@@ -1,0 +1,69 @@
+name: Deploy backend to AWS Lambda
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/deploy-backend.yml"
+  workflow_dispatch: {}
+
+# id-token: write is required for OIDC -- this is what lets AWS trust this
+# workflow run without any long-lived access keys stored in GitHub.
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC, no stored keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: sam build
+        working-directory: backend
+        run: sam build
+
+      - name: sam deploy
+        working-directory: backend
+        run: |
+          sam deploy \
+            --stack-name iso15189-chatbot \
+            --resolve-s3 \
+            --capabilities CAPABILITY_IAM \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset \
+            --parameter-overrides \
+              DatabaseUrl="${{ secrets.DATABASE_URL }}" \
+              S3Bucket="${{ vars.S3_BUCKET }}" \
+              RedisUrl="${{ secrets.REDIS_URL }}" \
+              GroqApiKey="${{ secrets.GROQ_API_KEY }}" \
+              MistralApiKey="${{ secrets.MISTRALAI_API_KEY }}" \
+              AdminApiKey="${{ secrets.ADMIN_API_KEY }}" \
+              FrontendOrigin="${{ vars.FRONTEND_ORIGIN }}"
+
+      # Deploy-time step, not run on cold start (see backend/Dockerfile) --
+      # this is a plain network call from the runner to Supabase, unrelated
+      # to which Lambda image is live, so step order vs. sam deploy doesn't
+      # matter for these additive-only migrations.
+      - name: Run database migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # alembic/env.py imports app.core.config, which hard-fails without
+          # these even though migrations themselves never use them.
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          MISTRALAI_API_KEY: ${{ secrets.MISTRALAI_API_KEY }}
+        run: |
+          pip install alembic sqlalchemy "psycopg[binary]" pgvector python-dotenv
+          alembic upgrade head
