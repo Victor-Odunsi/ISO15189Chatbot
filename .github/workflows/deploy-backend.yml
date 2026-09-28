@@ -1,11 +1,15 @@
 name: Deploy backend to AWS Lambda
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "backend/**"
-      - ".github/workflows/deploy-backend.yml"
+  # Auto-deploy-on-push disabled while iterating locally -- each run
+  # recompiles from scratch (no Docker layer cache yet) and takes several
+  # minutes. Re-enable by uncommenting the `push` block below, or deploy
+  # on demand meanwhile via the Actions tab -> this workflow -> Run workflow.
+  # push:
+  #   branches: [main]
+  #   paths:
+  #     - "backend/**"
+  #     - ".github/workflows/deploy-backend.yml"
   workflow_dispatch: {}
 
 # id-token: write is required for OIDC -- this is what lets AWS trust this
