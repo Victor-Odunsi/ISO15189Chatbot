@@ -9,6 +9,14 @@ Checks whether a query fetches the right context:
   phrasing. Low agreement flags topics where retrieval is fragile to wording,
   which Hit Rate@k alone (only ever tested against the original phrasing)
   cannot catch.
+- Precision@k: Hit Rate/MRR only ask whether the one known-good chunk is
+  somewhere in top-k -- they say nothing about the other k-1 slots. An LLM
+  judges each retrieved chunk's relevance to the question; low precision
+  means retrieval is noisy even when it does surface the right chunk.
+- Stage breakdown: hybrid_retrieve() is dense + sparse -> RRF fusion ->
+  cross-encoder rerank. Evaluating only the final output can't show whether
+  reranking is helping or hurting, or whether sparse retrieval contributes
+  anything -- this reruns Hit Rate/MRR at each intermediate stage.
 
 Usage: python -m evals.retrieval_eval [--k N] [--n-paraphrases N]
 Requires evals/dataset.jsonl -- run `python -m evals.dataset` first.
@@ -20,8 +28,14 @@ from pathlib import Path
 from langchain_core.prompts import ChatPromptTemplate
 
 from app.services.llm import get_llm
-from app.services.retrieval import hybrid_retrieve
-from evals.schemas import Paraphrases
+from app.services.retrieval import (
+    dense_search,
+    get_bm25_retriever,
+    hybrid_retrieve,
+    reciprocal_rank_fusion,
+    rerank,
+)
+from evals.schemas import Paraphrases, RelevanceVerdict
 
 DATASET_PATH = Path(__file__).parent / "dataset.jsonl"
 
@@ -90,6 +104,77 @@ def query_agreement(dataset: list[dict], n_paraphrases: int = 3, k: int = 5) -> 
     }
 
 
+RELEVANCE_PROMPT = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        "Is the passage below relevant to answering the question? Judge "
+        "relevance only -- the passage does not need to fully answer the "
+        "question, just meaningfully contribute to answering it.",
+    ),
+    ("human", "Question: {question}\n\nPassage: {passage}"),
+])
+
+
+def precision_at_k(dataset: list[dict], k: int = 5) -> dict:
+    chain = RELEVANCE_PROMPT | get_llm().with_structured_output(RelevanceVerdict)
+    precisions = []
+
+    for record in dataset:
+        question = record["question"]
+        docs = hybrid_retrieve(question, top_k=k)
+        if not docs:
+            precisions.append(0.0)
+            continue
+
+        relevant = sum(
+            chain.invoke({"question": question, "passage": doc.page_content}).relevant for doc in docs
+        )
+        precision = relevant / len(docs)
+        precisions.append(precision)
+        print(f"precision@{k}={precision:.2f}  {question!r}")
+
+    return {"mean_precision@k": sum(precisions) / len(precisions), "k": k}
+
+
+def _hit_and_rr(ids: list[str], target: str) -> tuple[bool, float]:
+    if target in ids:
+        return True, 1.0 / (ids.index(target) + 1)
+    return False, 0.0
+
+
+def stage_breakdown(dataset: list[dict], k: int = 5) -> dict:
+    stage_results: dict[str, list[tuple[bool, float]]] = {
+        "dense": [], "sparse": [], "fused": [], "reranked": [],
+    }
+
+    for record in dataset:
+        question, target = record["question"], record["chunk_id"]
+
+        dense_docs = dense_search(question, k=k)
+        bm25 = get_bm25_retriever()
+        sparse_docs = bm25.invoke(question)[:k] if bm25 is not None else []
+        fused_docs = reciprocal_rank_fusion([dense_docs, sparse_docs])[:k]
+        reranked_docs = rerank(question, fused_docs, top_k=k)
+
+        for name, docs in (
+            ("dense", dense_docs),
+            ("sparse", sparse_docs),
+            ("fused", fused_docs),
+            ("reranked", reranked_docs),
+        ):
+            ids = [doc.metadata.get("chunk_id") for doc in docs]
+            stage_results[name].append(_hit_and_rr(ids, target))
+
+    n = len(dataset)
+    return {
+        name: {
+            "hit_rate@k": sum(1 for hit, _ in results if hit) / n,
+            "mrr": sum(rr for _, rr in results) / n,
+        }
+        for name, results in stage_results.items()
+    }
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--k", type=int, default=5)
@@ -103,3 +188,9 @@ if __name__ == "__main__":
 
     print("\n=== Query agreement (paraphrase robustness) ===")
     print(query_agreement(dataset, n_paraphrases=args.n_paraphrases, k=args.k))
+
+    print("\n=== Precision@k ===")
+    print(precision_at_k(dataset, k=args.k))
+
+    print("\n=== Stage breakdown (dense / sparse / fused / reranked) ===")
+    print(stage_breakdown(dataset, k=args.k))

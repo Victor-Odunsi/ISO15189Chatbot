@@ -62,10 +62,10 @@ def load_dataset() -> list[dict]:
         return [json.loads(line) for line in f]
 
 
-def generate_answer(question: str) -> tuple[str, str]:
+def generate_answer(question: str, intent: str = "general") -> tuple[str, str]:
     documents = retrieve_context(question)
     context = format_context(documents)
-    answer = get_generation_chain("general").invoke({
+    answer = get_generation_chain(intent).invoke({
         "context": context,
         "chat_history": [],
         "standalone_question": question,
@@ -104,20 +104,20 @@ def answer_relevancy(question: str, answer: str, n_questions: int = 3) -> float:
     return sum(cosine_similarity(original_vec, vec) for vec in generated_vecs) / len(generated_vecs)
 
 
-def run(dataset: list[dict]) -> dict:
+def run(dataset: list[dict], intent: str = "general") -> dict:
     faithfulness_scores = []
     relevancy_scores = []
 
     for record in dataset:
         question = record["question"]
-        answer, context = generate_answer(question)
+        answer, context = generate_answer(question, intent=intent)
 
         f_score = faithfulness(answer, context)
         r_score = answer_relevancy(question, answer)
 
         faithfulness_scores.append(f_score)
         relevancy_scores.append(r_score)
-        print(f"faithfulness={f_score:.2f}  relevancy={r_score:.2f}  {question!r}")
+        print(f"[{intent}] faithfulness={f_score:.2f}  relevancy={r_score:.2f}  {question!r}")
 
     n = len(dataset)
     return {
@@ -127,7 +127,14 @@ def run(dataset: list[dict]) -> dict:
     }
 
 
+def run_all_intents(dataset: list[dict]) -> dict:
+    # CHECKLIST_PROMPT/SOP_PROMPT reshape the same retrieved context into a
+    # different document structure -- faithfulness/relevancy generalize to
+    # them unchanged, but only "general" was ever actually being checked.
+    return {intent: run(dataset, intent=intent) for intent in ("general", "checklist", "sop")}
+
+
 if __name__ == "__main__":
     dataset = load_dataset()
-    print("=== Groundedness (faithfulness, answer relevancy) ===")
-    print(run(dataset))
+    print("=== Groundedness (faithfulness, answer relevancy) -- all intents ===")
+    print(run_all_intents(dataset))
