@@ -1,10 +1,34 @@
-FROM public.ecr.aws/lambda/python:3.11
+# public.ecr.aws/lambda/python:3.11 runs on Amazon Linux 2 (glibc 2.26) --
+# too old for the manylinux_2_28 wheels numpy/scipy/torch ship today, so
+# pip falls back to building them from source there, which can't work for
+# something the size of torch (no compiler in that image either). Debian's
+# glibc 2.36 (same base the main Dockerfile already uses successfully)
+# satisfies those wheels directly, so we build on it instead and add the
+# Lambda Runtime Interface Client ourselves -- AWS's documented pattern for
+# using a non-Lambda base image ("Create a container image from an
+# alternative base image").
+FROM python:3.11.9-slim AS build
 
-WORKDIR ${LAMBDA_TASK_ROOT}
+# awslambdaric ships no prebuilt x86_64 wheel (only aarch64) -- its small
+# aws-lambda-cpp runtime shim has to be compiled here.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    g++ make cmake unzip libcurl4-openssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+ARG FUNCTION_DIR=/var/task
+RUN mkdir -p ${FUNCTION_DIR}
+WORKDIR ${FUNCTION_DIR}
 
 COPY backend/requirements.txt .
-RUN pip install --default-timeout=100 --no-cache-dir -r requirements.txt
+RUN pip install --default-timeout=100 --no-cache-dir --target ${FUNCTION_DIR} \
+    -r requirements.txt awslambdaric
 
-COPY backend/app ./app
+COPY backend/app ${FUNCTION_DIR}/app
 
+FROM python:3.11.9-slim
+ARG FUNCTION_DIR=/var/task
+WORKDIR ${FUNCTION_DIR}
+COPY --from=build ${FUNCTION_DIR} ${FUNCTION_DIR}
+
+ENTRYPOINT ["/usr/local/bin/python", "-m", "awslambdaric"]
 CMD ["app.worker.ingest_handler.handler"]
