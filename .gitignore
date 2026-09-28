@@ -27,5 +27,8 @@ out/
 .aws-sam/
 samconfig.toml
 
+# Personal Claude Code permission overrides (not shared project config)
+.claude/settings.local.json
+
 # OS
 .DS_Store
