@@ -9,10 +9,12 @@
 # alternative base image").
 FROM python:3.11.9-slim AS build
 
-# awslambdaric ships no prebuilt x86_64 wheel (only aarch64) -- its small
-# aws-lambda-cpp runtime shim has to be compiled here.
+# awslambdaric ships no prebuilt x86_64 wheel (only aarch64) -- installing
+# it compiles its own vendored curl (autotools, hence autoconf/automake/
+# libtool -- it never touches the system libcurl) plus the small
+# aws-lambda-cpp runtime shim (cmake) here.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    g++ make cmake unzip libcurl4-openssl-dev \
+    g++ make cmake autoconf automake libtool pkg-config unzip \
     && rm -rf /var/lib/apt/lists/*
 
 ARG FUNCTION_DIR=/var/task
