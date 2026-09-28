@@ -9,7 +9,10 @@ from slowapi.util import get_remote_address
 from app.core.config import redis_url
 
 TRUSTED_PROXY = os.getenv("TRUSTED_PROXY", "false").lower() == "true"
-ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "")
+# .strip(): a GitHub Actions secret pasted via the web UI can silently
+# pick up a trailing newline, which would otherwise never match the key
+# a caller sends in the X-Admin-Key header.
+ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "").strip()
 
 
 def get_proxied_remote_address(request: Request) -> str:
