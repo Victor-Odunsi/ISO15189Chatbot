@@ -1,11 +1,9 @@
-import asyncio
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import pool
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy import create_engine, pool
 
-from app.core.config import database_url
+from app.core.config import sync_database_url
 from app.db.models import Base
 
 config = context.config
@@ -17,7 +15,7 @@ target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
     context.configure(
-        url=database_url,
+        url=sync_database_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -26,22 +24,22 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-def do_run_migrations(connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata)
-    with context.begin_transaction():
-        context.run_migrations()
+def run_migrations_online() -> None:
+    # DDL runs sequentially regardless -- migrations gain nothing from an
+    # async engine, so plain psycopg avoids needing greenlet/asyncpg here.
+    connectable = create_engine(
+        sync_database_url, poolclass=pool.NullPool, connect_args={"prepare_threshold": None}
+    )
 
+    with connectable.connect() as connection:
+        context.configure(connection=connection, target_metadata=target_metadata)
+        with context.begin_transaction():
+            context.run_migrations()
 
-async def run_migrations_online() -> None:
-    connectable = create_async_engine(database_url, poolclass=pool.NullPool)
-
-    async with connectable.connect() as connection:
-        await connection.run_sync(do_run_migrations)
-
-    await connectable.dispose()
+    connectable.dispose()
 
 
 if context.is_offline_mode():
     run_migrations_offline()
 else:
-    asyncio.run(run_migrations_online())
+    run_migrations_online()
