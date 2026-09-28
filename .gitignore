@@ -27,6 +27,12 @@ out/
 .aws-sam/
 samconfig.toml
 
+# Synthetic eval dataset -- generated from whatever is currently ingested
+# (itself derived from the uncommitted source PDFs above), so it is
+# environment-specific rather than a fixture to check in. Regenerate with
+# `python -m evals.dataset`.
+backend/evals/dataset.jsonl
+
 # Personal Claude Code permission overrides (not shared project config)
 .claude/settings.local.json
 
