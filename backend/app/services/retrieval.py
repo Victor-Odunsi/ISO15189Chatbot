@@ -28,10 +28,15 @@ RERANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 s3_client = boto3.client("s3", region_name=aws_region)
 
 
+HF_CACHE_DIR = "/tmp/hf_cache"
+
+
+@lru_cache(maxsize=1)
 def get_embeddings():
     return HuggingFaceEmbeddings(
         model_name="BAAI/bge-small-en",
-        model_kwargs={"device": "cpu"}
+        model_kwargs={"device": "cpu"},
+        cache_folder=HF_CACHE_DIR,
     )
 
 
@@ -78,7 +83,7 @@ def get_bm25_retriever():
 
 @lru_cache(maxsize=1)
 def get_reranker() -> CrossEncoder:
-    return CrossEncoder(RERANKER_MODEL)
+    return CrossEncoder(RERANKER_MODEL, cache_folder=HF_CACHE_DIR)
 
 
 def reciprocal_rank_fusion(

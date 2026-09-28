@@ -46,8 +46,13 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
-      MemorySize: 1536
-      Timeout: 60
+      # A cold container's first request downloads the embedding + reranker
+      # models from HF Hub (cached in /tmp for the life of that container --
+      # see HF_CACHE_DIR in retrieval.py); 60s wasn't enough headroom for
+      # that one-time cost, so this trades a little idle cost for not
+      # timing out on the first request to a fresh container.
+      MemorySize: 2048
+      Timeout: 120
       FunctionUrlConfig:
         AuthType: NONE
         InvokeMode: RESPONSE_STREAM
