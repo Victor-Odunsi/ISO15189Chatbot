@@ -86,3 +86,17 @@ body {
   padding: 0.1em 0.35em;
   border-radius: 0.25em;
 }
+
+@keyframes thinking-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.thinking-text {
+  animation: thinking-pulse 1.4s ease-in-out infinite;
+}
