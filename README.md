@@ -33,7 +33,7 @@ backend/    FastAPI, deployed to AWS Lambda (Function URL, streaming) via SAM
   app/worker/    SQS-triggered ingestion worker (separate Lambda function)
 ```
 
-- **LLM**: Groq (`openai/gpt-oss-20b`), with Mistral (`mistral-small-latest`) as a fallback — both free-tier
+- **LLM**: Groq (`openai/gpt-oss-120b`), with Mistral (`mistral-small-latest`) as a fallback — both free-tier
 - **Embeddings**: `BAAI/bge-small-en` (HuggingFace, local/CPU)
 - **Reranker**: `cross-encoder/ms-marco-MiniLM-L-6-v2` (local/CPU)
 - **Vector store + chat history**: Postgres (pgvector extension)

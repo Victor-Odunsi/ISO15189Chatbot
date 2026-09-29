@@ -9,10 +9,11 @@ from app.core.config import groq_api_key
 logger = logging.getLogger(__name__)
 
 # Both model names below were verified live against each provider's
-# current /v1/models catalog -- the originals this file used
-# (llama-3.1-8b-instant on Groq, mistral-small-3.1 on Mistral) have
-# since been retired by their providers and now 404.
-GROQ_MODEL = "openai/gpt-oss-20b"
+# current /v1/models catalog. MISTRAL_MODEL replaces an original
+# (mistral-small-3.1) retired by its provider and now 404ing.
+# GROQ_MODEL was bumped from openai/gpt-oss-20b to the 120b variant as a
+# deliberate capability upgrade, not a retirement.
+GROQ_MODEL = "openai/gpt-oss-120b"
 MISTRAL_MODEL = "mistral-small-latest"
 
 
