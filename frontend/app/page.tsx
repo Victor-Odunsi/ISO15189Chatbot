@@ -56,7 +56,7 @@ export default function Home() {
         onDelete={removeSession}
       />
       <div className="flex flex-1 flex-col">
-        <header className="border-b border-border bg-surface px-4 py-3">
+        <header className="border-b border-border bg-gradient-to-b from-surface to-background px-4 py-3">
           <h1 className="text-sm font-semibold text-foreground">ISO 15189 QMS Assistant</h1>
         </header>
         <ChatWindow

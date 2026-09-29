@@ -13,7 +13,7 @@ interface SidebarProps {
 
 export function Sidebar({ sessions, activeSessionId, onNewChat, onSwitch, onDelete }: SidebarProps) {
   return (
-    <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-surface">
+    <aside className="flex w-64 shrink-0 flex-col border-r border-border bg-gradient-to-b from-surface to-background">
       <div className="p-3">
         <button
           onClick={onNewChat}
