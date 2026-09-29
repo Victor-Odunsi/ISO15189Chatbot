@@ -10,7 +10,10 @@ from app.core.security import SessionIdCaptureMiddleware, limiter
 from app.api.chat import router as chat_router
 from app.api.admin import router as admin_router
 
-logging.basicConfig(filename='app.log', level=logging.INFO)
+# Log to stdout, not a local file -- Lambda's filesystem is read-only
+# outside /tmp, and stdout is captured into CloudWatch automatically
+# (and still shows up in a local terminal/docker-compose run).
+logging.basicConfig(level=logging.INFO)
 
 
 @asynccontextmanager
