@@ -22,6 +22,7 @@ data/*
 node_modules/
 .next/
 out/
+*.tsbuildinfo
 
 # AWS SAM build artifacts / local deploy config
 .aws-sam/
