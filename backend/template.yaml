@@ -105,6 +105,12 @@ Resources:
           HF_HUB_DISABLE_XET: "1"
           DATABASE_URL: !Ref DatabaseUrl
           S3_BUCKET: !Ref S3Bucket
+          # The worker never calls Groq/Mistral, but ingest_handler.py
+          # imports app.core.config for aws_region, and that module
+          # unconditionally raises at import time if these are missing --
+          # every ingestion attempt was crashing before it could do anything.
+          GROQ_API_KEY: !Ref GroqApiKey
+          MISTRALAI_API_KEY: !Ref MistralApiKey
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref S3Bucket
