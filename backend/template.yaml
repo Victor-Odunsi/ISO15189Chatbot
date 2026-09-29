@@ -60,6 +60,16 @@ Resources:
         Variables:
           AWS_LWA_INVOKE_MODE: RESPONSE_STREAM
           AWS_LWA_PORT: "8000"
+          # HF_HOME governs everything huggingface_hub touches (model cache,
+          # token, and -- critically -- the hf_xet accelerated-download
+          # backend's own cache/log dir), not just the cache_folder kwarg
+          # passed to individual model constructors in retrieval.py. The
+          # Lambda execution user's real $HOME isn't writable, which crashed
+          # every chat request the moment a model needed to be downloaded.
+          # Disabling xet outright too: it adds another filesystem
+          # assumption for no real benefit on models this small.
+          HF_HOME: /tmp/hf_home
+          HF_HUB_DISABLE_XET: "1"
           DATABASE_URL: !Ref DatabaseUrl
           S3_BUCKET: !Ref S3Bucket
           SQS_QUEUE_URL: !Ref IngestQueue
@@ -91,6 +101,8 @@ Resources:
             BatchSize: 1
       Environment:
         Variables:
+          HF_HOME: /tmp/hf_home
+          HF_HUB_DISABLE_XET: "1"
           DATABASE_URL: !Ref DatabaseUrl
           S3_BUCKET: !Ref S3Bucket
       Policies:

@@ -32,13 +32,12 @@ async def chat(request: Request, query: QueryInput):
     session_id = query.session_id or str(uuid.uuid4())
     logger.info(f"Session ID: {session_id}, User question: {query.question}")
 
-    chat_history = await get_chat_history(session_id)
-
     async def event_stream():
         full_answer = ""
         try:
             yield _sse("session", {"session_id": session_id})
 
+            chat_history = await get_chat_history(session_id)
             analysis = await analyze_query(query.question, chat_history)
             documents = await asyncio.to_thread(retrieve_context, analysis.standalone_question)
             context = format_context(documents)
@@ -57,8 +56,8 @@ async def chat(request: Request, query: QueryInput):
 
             yield _sse("end", {})
 
-        except Exception as e:
-            logger.error(f"Chat error: {e}")
+        except Exception:
+            logger.exception("Chat error")
             yield _sse("error", {"message": "Something went wrong generating a response. Please try again."})
         finally:
             await insert_message(session_id, "user", query.question)
