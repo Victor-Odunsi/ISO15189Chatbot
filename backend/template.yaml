@@ -40,7 +40,7 @@ Resources:
       # Should stay >= IngestWorkerFunction's Timeout below, so a message
       # can't become visible again (and get redelivered) while still being
       # processed by the worker that first picked it up.
-      VisibilityTimeout: 300
+      VisibilityTimeout: 630
 
   ApiFunction:
     Type: AWS::Serverless::Function
@@ -91,8 +91,12 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
-      MemorySize: 1536
-      Timeout: 240
+      # Embedding a few hundred chunks on CPU is genuinely slow, not stuck
+      # -- live testing hit the old 240s ceiling repeatedly at exactly
+      # 240000ms with memory already near its 1536MB limit. More memory
+      # also means more Lambda-allocated CPU, not just headroom against OOM.
+      MemorySize: 3008
+      Timeout: 600
       Events:
         SqsIngest:
           Type: SQS
