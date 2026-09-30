@@ -14,6 +14,11 @@ import boto3
 from app.core.config import aws_region
 from app.services.ingestion import ingest_file
 
+# Without this, INFO-level logger.info() calls here and in ingestion.py go
+# nowhere -- this entrypoint never had a logging config of its own (unlike
+# app/main.py for the API function), so every past ingestion run succeeded
+# or failed with zero visible log output.
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 s3_client = boto3.client("s3", region_name=aws_region)
