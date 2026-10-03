@@ -39,18 +39,30 @@ async def chat(request: Request, query: QueryInput):
 
             chat_history = await get_chat_history(session_id)
             analysis = await analyze_query(query.question, chat_history)
-            documents = await asyncio.to_thread(retrieve_context, analysis.standalone_question)
-            context = format_context(documents)
-            citations = build_citations(documents)
+
+            if analysis.intent == "chitchat":
+                # Greetings/small talk don't need retrieval -- running it
+                # anyway fed GENERAL_PROMPT's "say so if context is
+                # insufficient" instruction an irrelevant query, so a plain
+                # "hi" got treated as an unanswerable content question.
+                citations = []
+                payload = {
+                    "standalone_question": analysis.standalone_question,
+                    "chat_history": chat_history,
+                }
+            else:
+                documents = await asyncio.to_thread(retrieve_context, analysis.standalone_question)
+                citations = build_citations(documents)
+                payload = {
+                    "context": format_context(documents),
+                    "standalone_question": analysis.standalone_question,
+                    "chat_history": chat_history,
+                }
 
             yield _sse("citations", {"citations": citations})
 
             generation_chain = get_generation_chain(analysis.intent)
-            async for chunk in generation_chain.astream({
-                "context": context,
-                "standalone_question": analysis.standalone_question,
-                "chat_history": chat_history,
-            }):
+            async for chunk in generation_chain.astream(payload):
                 full_answer += chunk
                 yield _sse("token", {"content": chunk})
 

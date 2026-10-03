@@ -12,11 +12,13 @@ class QueryAnalysis(BaseModel):
     standalone_question: str = Field(
         description="The user's question, rewritten to stand alone without needing the chat history"
     )
-    intent: Literal["general", "checklist", "sop"] = Field(
+    intent: Literal["chitchat", "general", "checklist", "sop"] = Field(
         description=(
-            "'general' for a direct question/explanation, 'checklist' if the user "
-            "wants an audit/compliance checklist, 'sop' if they want a Standard "
-            "Operating Procedure document"
+            "'chitchat' for greetings, thanks, farewells, or questions about what "
+            "the assistant can do -- anything that is not actually a question "
+            "about ISO 15189 content; 'general' for a direct question/explanation, "
+            "'checklist' if the user wants an audit/compliance checklist, 'sop' if "
+            "they want a Standard Operating Procedure document"
         )
     )
 

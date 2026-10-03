@@ -15,13 +15,35 @@ ANALYSIS_PROMPT = ChatPromptTemplate.from_messages([
     ("system", (
         "Given a chat history and the latest user question, do two things:\n"
         "1. Rewrite the question as a standalone question that can be understood "
-        "without the chat history. If it already stands alone, leave it as is.\n"
-        "2. Classify the user's intent: 'general' for a direct question or "
-        "explanation, 'checklist' if they want an audit/compliance checklist, "
-        "'sop' if they want a Standard Operating Procedure document."
+        "without the chat history. If it already stands alone, leave it as is. "
+        "For greetings or small talk, leave it as is.\n"
+        "2. Classify the user's intent into exactly one of:\n"
+        "- 'chitchat': ONLY greetings (hi, hello), thanks, farewells, or direct "
+        "questions about the assistant itself (e.g. 'what can you do', 'who are "
+        "you'). Never use this for any question seeking actual information, "
+        "even if that information is unrelated to ISO 15189 -- 'what's the "
+        "capital of France?' or 'what's the weather today?' are real questions "
+        "and must be 'general', not 'chitchat'. Only use 'chitchat' when the "
+        "user is not asking for any information at all.\n"
+        "- 'general': any direct question or request for information or "
+        "explanation, whether or not it relates to ISO 15189.\n"
+        "- 'checklist': the user wants an audit/compliance checklist.\n"
+        "- 'sop': the user wants a Standard Operating Procedure document."
     )),
     ('placeholder', '{chat_history}'),
     ("human", "{input}"),
+])
+
+CHITCHAT_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", """You are a friendly assistant for the ISO 15189:2022 laboratory
+quality management standard. Respond briefly and naturally to greetings, thanks,
+or questions about what you can do. If relevant, mention that you can answer
+questions about the standard, generate compliance checklists, or draft SOPs --
+all grounded in the retrieved text, with citations. Do not invent ISO 15189
+content here; this is small talk, not a content question.
+"""),
+    ('placeholder', '{chat_history}'),
+    ("human", "{standalone_question}"),
 ])
 
 GENERAL_PROMPT = ChatPromptTemplate.from_messages([
@@ -64,6 +86,7 @@ Context:
 ])
 
 _GENERATION_PROMPTS = {
+    "chitchat": CHITCHAT_PROMPT,
     "general": GENERAL_PROMPT,
     "checklist": CHECKLIST_PROMPT,
     "sop": SOP_PROMPT,
