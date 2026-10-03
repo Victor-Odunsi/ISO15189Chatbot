@@ -4,7 +4,11 @@ import { useCallback, useState } from "react";
 import { streamChat } from "@/lib/api";
 import type { Citation } from "@/lib/types";
 
-const IDLE_TIMEOUT_MS = 30_000;
+// A cold Lambda container can legitimately take a while before the first
+// byte (backend's own function timeout is 120s precisely to absorb this),
+// so 30s was too tight and aborted genuinely-working requests, not just
+// stuck ones.
+const IDLE_TIMEOUT_MS = 90_000;
 
 export type ChatStreamStatus = "idle" | "streaming" | "error";
 

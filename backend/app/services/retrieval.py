@@ -6,8 +6,6 @@ import boto3
 from botocore.exceptions import ClientError
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
-from langchain_huggingface import HuggingFaceEmbeddings
-from sentence_transformers import CrossEncoder
 from sqlalchemy import select
 
 from app.core.config import aws_region, s3_bucket
@@ -33,6 +31,14 @@ HF_CACHE_DIR = "/tmp/hf_cache"
 
 @lru_cache(maxsize=1)
 def get_embeddings():
+    # Deferred: langchain_huggingface pulls in torch/sentence_transformers,
+    # a genuinely slow import. At module level, it blocked uvicorn from
+    # starting at all on a cold container -- even a bare CORS preflight
+    # had to wait for it, since nothing can respond until the app finishes
+    # importing. Deferring it here means only requests that actually need
+    # embeddings (not chitchat, not session/message endpoints) pay that cost.
+    from langchain_huggingface import HuggingFaceEmbeddings
+
     return HuggingFaceEmbeddings(
         model_name="BAAI/bge-small-en",
         model_kwargs={"device": "cpu"},
@@ -82,7 +88,9 @@ def get_bm25_retriever():
 
 
 @lru_cache(maxsize=1)
-def get_reranker() -> CrossEncoder:
+def get_reranker() -> "CrossEncoder":
+    from sentence_transformers import CrossEncoder  # see get_embeddings() above
+
     return CrossEncoder(RERANKER_MODEL, cache_folder=HF_CACHE_DIR)
 
 
