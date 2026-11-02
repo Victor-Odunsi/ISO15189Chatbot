@@ -61,3 +61,48 @@ def test_chat_emits_error_event_on_failure(client):
         assert response.status_code == 200
         assert "event: error" in response.text
         assert "event: end" not in response.text
+
+
+def _request_traces(capsys) -> list[dict]:
+    import json
+
+    lines = capsys.readouterr().out.splitlines()
+    return [json.loads(line) for line in lines if '"request_trace"' in line]
+
+
+def test_chat_logs_per_stage_trace(client, capsys):
+    with patch("app.api.chat.get_chat_history", new=AsyncMock(return_value=[])), patch(
+        "app.api.chat.insert_message", new=AsyncMock()
+    ), patch(
+        "app.api.chat.analyze_query",
+        new=AsyncMock(return_value=FakeAnalysis("What is clause 4.1?", "general")),
+    ), patch(
+        "app.api.chat.retrieve_context", return_value=[]
+    ), patch(
+        "app.api.chat.build_citations", return_value=[]
+    ), patch(
+        "app.api.chat.get_generation_chain",
+        return_value=FakeGenerationChain(["Clause ", "4.1"]),
+    ):
+        client.post("/chat", json={"question": "What is clause 4.1?", "session_id": "test-session"})
+
+    [trace] = _request_traces(capsys)
+    assert trace["intent"] == "general"
+    assert set(trace["stages_ms"]) >= {"history", "analyze_llm", "retrieve_total", "generate_llm", "persist"}
+    assert "ttft_ms" in trace and trace["ttft_ms"] <= trace["total_ms"]
+    assert "error" not in trace
+
+
+def test_chat_logs_trace_even_when_persist_fails(client, capsys):
+    with patch("app.api.chat.get_chat_history", new=AsyncMock(return_value=[])), patch(
+        "app.api.chat.insert_message", new=AsyncMock(side_effect=RuntimeError("db down"))
+    ), patch(
+        "app.api.chat.analyze_query", new=AsyncMock(side_effect=RuntimeError("boom"))
+    ):
+        try:
+            client.post("/chat", json={"question": "anything", "session_id": "test-session"})
+        except RuntimeError:
+            pass
+
+    [trace] = _request_traces(capsys)
+    assert trace["error"] == "RuntimeError"

@@ -9,6 +9,7 @@ from langchain_core.documents import Document
 from sqlalchemy import select
 
 from app.core.config import aws_region, s3_bucket
+from app.core.tracing import stage
 from app.db.models import Chunk
 from app.db.session import SyncSessionLocal
 
@@ -37,18 +38,21 @@ def get_embeddings():
     # had to wait for it, since nothing can respond until the app finishes
     # importing. Deferring it here means only requests that actually need
     # embeddings (not chitchat, not session/message endpoints) pay that cost.
-    from langchain_huggingface import HuggingFaceEmbeddings
+    with stage("load_embedder"):
+        from langchain_huggingface import HuggingFaceEmbeddings
 
-    return HuggingFaceEmbeddings(
-        model_name="BAAI/bge-small-en",
-        model_kwargs={"device": "cpu"},
-        cache_folder=HF_CACHE_DIR,
-    )
+        return HuggingFaceEmbeddings(
+            model_name="BAAI/bge-small-en",
+            model_kwargs={"device": "cpu"},
+            cache_folder=HF_CACHE_DIR,
+        )
 
 
 def dense_search(query: str, k: int = DENSE_K) -> list[Document]:
-    query_vector = get_embeddings().embed_query(query)
-    with SyncSessionLocal() as session:
+    embeddings = get_embeddings()
+    with stage("embed_query"):
+        query_vector = embeddings.embed_query(query)
+    with stage("dense_sql"), SyncSessionLocal() as session:
         rows = (
             session.execute(
                 select(Chunk).order_by(Chunk.embedding.cosine_distance(query_vector)).limit(k)
@@ -71,8 +75,9 @@ def get_bm25_retriever():
         logger.warning("S3_BUCKET not configured; sparse retrieval disabled.")
         return None
     try:
-        obj = s3_client.get_object(Bucket=s3_bucket, Key=BM25_S3_KEY)
-        corpus: dict[str, Document] = pickle.loads(obj["Body"].read())
+        with stage("load_bm25_s3"):
+            obj = s3_client.get_object(Bucket=s3_bucket, Key=BM25_S3_KEY)
+            corpus: dict[str, Document] = pickle.loads(obj["Body"].read())
     except ClientError as e:
         if e.response.get("Error", {}).get("Code") in ("NoSuchKey", "404"):
             logger.warning(
@@ -82,16 +87,18 @@ def get_bm25_retriever():
         else:
             logger.error(f"Error loading BM25 corpus from S3: {e}")
         return None
-    retriever = BM25Retriever.from_documents(list(corpus.values()))
+    with stage("build_bm25_index"):
+        retriever = BM25Retriever.from_documents(list(corpus.values()))
     retriever.k = SPARSE_K
     return retriever
 
 
 @lru_cache(maxsize=1)
 def get_reranker() -> "CrossEncoder":
-    from sentence_transformers import CrossEncoder  # see get_embeddings() above
+    with stage("load_reranker"):
+        from sentence_transformers import CrossEncoder  # see get_embeddings() above
 
-    return CrossEncoder(RERANKER_MODEL, cache_folder=HF_CACHE_DIR)
+        return CrossEncoder(RERANKER_MODEL, cache_folder=HF_CACHE_DIR)
 
 
 def reciprocal_rank_fusion(
@@ -123,7 +130,9 @@ def rerank(query: str, documents: list[Document], top_k: int = RERANK_TOP_K) -> 
     if not documents:
         return []
     pairs = [(query, doc.page_content) for doc in documents]
-    scores = get_reranker().predict(pairs)
+    reranker = get_reranker()
+    with stage("rerank"):
+        scores = reranker.predict(pairs)
     ranked = sorted(zip(scores, documents), key=lambda pair: pair[0], reverse=True)
     return [doc for _, doc in ranked[:top_k]]
 
@@ -137,7 +146,9 @@ def hybrid_retrieve(query: str, top_k: int = RERANK_TOP_K) -> list[Document]:
     dense_docs = dense_search(query, k=DENSE_K)
 
     bm25 = get_bm25_retriever()
-    sparse_docs = bm25.invoke(query) if bm25 is not None else []
+    with stage("bm25_search"):
+        sparse_docs = bm25.invoke(query) if bm25 is not None else []
 
-    fused = reciprocal_rank_fusion([dense_docs, sparse_docs])
+    with stage("fusion"):
+        fused = reciprocal_rank_fusion([dense_docs, sparse_docs])
     return rerank(query, fused, top_k=top_k)
