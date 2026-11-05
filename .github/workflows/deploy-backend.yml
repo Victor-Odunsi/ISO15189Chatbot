@@ -34,6 +34,23 @@ jobs:
         with:
           use-installer: true
 
+      # Deploy-time step, not run on cold start (see backend/Dockerfile).
+      # Runs BEFORE sam deploy: new code may depend on new tables (0003's
+      # session_summaries is read on every chat), and additive migrations are
+      # safe for the old code still serving traffic -- the reverse order
+      # leaves a window where the new code queries tables that don't exist.
+      - name: Run database migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # alembic/env.py imports app.core.config, which hard-fails without
+          # these even though migrations themselves never use them.
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          MISTRALAI_API_KEY: ${{ secrets.MISTRALAI_API_KEY }}
+        run: |
+          pip install alembic sqlalchemy "psycopg[binary]" pgvector python-dotenv
+          alembic upgrade head
+
       - name: sam build
         working-directory: backend
         run: sam build
@@ -54,21 +71,6 @@ jobs:
               RedisUrl="${{ secrets.REDIS_URL }}" \
               GroqApiKey="${{ secrets.GROQ_API_KEY }}" \
               MistralApiKey="${{ secrets.MISTRALAI_API_KEY }}" \
+              GeminiApiKey="${{ secrets.GEMINI_API_KEY }}" \
               AdminApiKey="${{ secrets.ADMIN_API_KEY }}" \
               FrontendOrigin="${{ vars.FRONTEND_ORIGIN }}"
-
-      # Deploy-time step, not run on cold start (see backend/Dockerfile) --
-      # this is a plain network call from the runner to Supabase, unrelated
-      # to which Lambda image is live, so step order vs. sam deploy doesn't
-      # matter for these additive-only migrations.
-      - name: Run database migrations
-        working-directory: backend
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          # alembic/env.py imports app.core.config, which hard-fails without
-          # these even though migrations themselves never use them.
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          MISTRALAI_API_KEY: ${{ secrets.MISTRALAI_API_KEY }}
-        run: |
-          pip install alembic sqlalchemy "psycopg[binary]" pgvector python-dotenv
-          alembic upgrade head

@@ -1,0 +1,46 @@
+# Direct production dependencies of the API and ingestion worker images.
+# requirements.txt is generated from this file -- edit here, then recompile:
+#
+#   uv pip compile requirements.in -o requirements.txt \
+#     --python-version 3.11 --python-platform x86_64-manylinux_2_28 \
+#     --extra-index-url https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match
+#
+# Dev/test/eval tooling lives in requirements-dev.txt, never here.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Web server + API
+fastapi==0.116.1
+uvicorn==0.35.0
+python-multipart==0.0.20     # admin upload endpoint (multipart form)
+slowapi==0.1.9
+redis==5.2.1                 # slowapi's Redis (Upstash) rate-limit storage
+python-dotenv==1.1.1
+pydantic==2.11.7
+
+# Database
+SQLAlchemy==2.0.43
+psycopg[binary]==3.2.3       # both engines (app/db/session.py) + alembic
+pgvector==0.3.6
+alembic==1.13.3
+
+# AWS (S3 BM25 corpus, SQS ingestion queue)
+boto3==1.35.0
+
+# LLM providers
+groq==0.31.0
+openai==1.100.2              # Gemini, via its OpenAI-compatible endpoint
+langchain==0.3.27
+langchain-core==0.3.74
+langchain-community==0.3.27
+langchain-groq==0.3.7
+langchain-mistralai==0.2.11
+langchain-openai==0.3.30
+
+# Retrieval
+langchain-huggingface==0.3.1
+sentence-transformers==5.1.0
+# CPU-only build: the default PyPI wheel is the CUDA build plus several GB of
+# nvidia-* libraries this CPU-only Lambda never uses.
+torch==2.8.0+cpu
+rank_bm25==0.2.2
+pypdf==6.0.0                 # PyPDFLoader in ingestion

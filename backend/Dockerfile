@@ -10,13 +10,13 @@ WORKDIR /app/backend
 
 RUN pip install --upgrade pip
 
-# CPU-only torch first: the default PyPI torch wheel on Linux is the CUDA
-# build, which drags in several GB of nvidia-* libraries this CPU-only
-# Lambda never uses. requirements.txt's torch==2.8.0 is then already
-# satisfied by 2.8.0+cpu (PEP 440: a local version label matches), so the
-# CUDA build is never pulled in.
+# requirements.txt pins torch==2.8.0+cpu (the default PyPI wheel is the CUDA
+# build, several GB of nvidia-* libraries a CPU-only Lambda never uses).
+# Installing it in its own earlier layer is just a build-cache optimisation:
+# torch is by far the largest dependency and changes least often, so editing
+# any other requirement doesn't re-download it.
 RUN pip install --default-timeout=100 --no-cache-dir \
-    --index-url https://download.pytorch.org/whl/cpu torch==2.8.0
+    --index-url https://download.pytorch.org/whl/cpu torch==2.8.0+cpu
 
 COPY backend/requirements.txt .
 RUN pip install --default-timeout=100 --no-cache-dir -r requirements.txt

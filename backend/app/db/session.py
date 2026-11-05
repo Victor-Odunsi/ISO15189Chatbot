@@ -1,48 +1,37 @@
-from uuid import uuid4
-
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.pool import NullPool
 
-from app.core.config import database_url, sync_database_url
+from app.core.config import async_database_url, sync_database_url
 
-# statement_cache_size=0 only disables asyncpg's own client-side statement
-# cache -- it does NOT stop SQLAlchemy's asyncpg dialect from calling the
-# driver's connection.prepare(), which auto-names every prepared statement
-# from a small per-process counter (__asyncpg_stmt_1__, _2__, ...) when no
-# explicit name is given. Against a transaction-mode pooler (Supabase's
-# Supavisor, or PgBouncer), two different Lambda execution environments can
-# get routed to the same physical backend connection and collide on that
-# same counter-based name -- this hit live as DuplicatePreparedStatementError
-# on the very first query of a fresh container. prepared_statement_name_func
-# makes every name unique instead; NullPool is required alongside it (see
-# SQLAlchemy's own "Prepared Statement Name with PGBouncer" docs) since
-# unique names are never reused, so pooling connections for reuse would just
-# accumulate unused prepared statements server-side.
-engine = create_async_engine(
-    database_url,
-    poolclass=NullPool,
-    connect_args={
-        "statement_cache_size": 0,
-        "timeout": 10,
-        "prepared_statement_name_func": lambda: f"__asyncpg_{uuid4()}__",
-    },
-)
+# Both engines use psycopg 3 with prepare_threshold=None, which never creates
+# named server-side prepared statements. That's what makes a real client-side
+# pool safe against Supabase's transaction-mode pooler (Supavisor, port 6543):
+# successive transactions on one pooled client connection can land on
+# different Postgres backends, so any named prepared statement would collide
+# or go missing (this hit live as DuplicatePreparedStatementError under
+# asyncpg, whose SQLAlchemy dialect always prepares statements).
+#
+# The pool is the point: without one, every query paid a fresh TCP + TLS +
+# SCRAM-auth handshake to the pooler -- ~2s per query from the Lambda region
+# to the database region, measured as `history` taking ~2s to return 0 rows.
+#
+# Sizing: a Lambda container serves one request at a time, so it needs very
+# few connections; small pools also keep N warm containers x pool size well
+# under the pooler's client-connection limit.
+#   pool_pre_ping: Lambda freezes idle containers, and the pooler drops idle
+#     connections meanwhile -- a 1-round-trip liveness check on checkout beats
+#     a failed query on a dead connection.
+#   pool_recycle: proactively replace connections older than the pooler's
+#     idle timeout window.
+_POOL = {"pool_size": 2, "max_overflow": 2, "pool_pre_ping": True, "pool_recycle": 300}
+_PSYCOPG_ARGS = {"prepare_threshold": None, "connect_timeout": 10}
+
+engine = create_async_engine(async_database_url, connect_args=_PSYCOPG_ARGS, **_POOL)
 AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 # Dense (pgvector) retrieval runs off the request/response async path (see
 # services/retrieval.py, called via asyncio.to_thread), so it uses a plain
-# sync engine rather than juggling a second event loop. prepare_threshold
-# disables psycopg's own server-side prepared statements -- same pooler
-# incompatibility as asyncpg's statement_cache_size above, since this
-# points at the same (potentially pooled) database.
-sync_engine = create_engine(
-    sync_database_url,
-    pool_pre_ping=True,
-    # connect_timeout: same 10s ceiling as the async engine's "timeout" above.
-    # Without it, a stuck connect blocks the retrieval thread until Lambda's
-    # 120s function timeout kills the whole request.
-    connect_args={"prepare_threshold": None, "connect_timeout": 10},
-)
+# sync engine rather than juggling a second event loop.
+sync_engine = create_engine(sync_database_url, connect_args=_PSYCOPG_ARGS, **_POOL)
 SyncSessionLocal = sessionmaker(sync_engine, expire_on_commit=False, class_=Session)

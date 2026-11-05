@@ -1,0 +1,17 @@
+# Local development, tests and evals -- everything production needs, plus tooling.
+# Never installed into the Lambda images (see backend/Dockerfile*).
+#
+#   pip install -r backend/requirements-dev.txt
+-r requirements.txt
+
+pytest==8.3.5
+httpx==0.28.1
+ruff==0.8.6
+moto[s3,sqs]==5.1.22
+
+# evals/ (embedding_backend_parity.py also needs fastembed -- see its docstring)
+numpy
+scipy
+
+# Notebooks / interactive debugging
+ipykernel==6.30.1

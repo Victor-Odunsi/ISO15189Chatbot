@@ -36,3 +36,21 @@ class Chunk(Base):
     page: Mapped[int | None] = mapped_column(Integer, nullable=True)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIM), nullable=False)
+
+
+class SessionSummary(Base):
+    """Running summary of a session's older messages (services/memory.py).
+    The LLM context is this summary plus every message with
+    id > summarized_up_to_id, so it stays bounded however long a chat runs."""
+
+    __tablename__ = "session_summaries"
+
+    session_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    summary: Mapped[str] = mapped_column(Text, nullable=False)
+    summarized_up_to_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
