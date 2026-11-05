@@ -106,3 +106,20 @@ def test_chat_logs_trace_even_when_persist_fails(client, capsys):
 
     [trace] = _request_traces(capsys)
     assert trace["error"] == "RuntimeError"
+
+
+def test_trace_reports_stage_still_running_when_request_ends(capsys):
+    import json
+
+    from app.core.tracing import log_trace, stage, start_trace
+
+    trace = start_trace(route="/chat")
+    with stage("retrieve_total"):
+        # Simulates Lambda cancelling the request while a worker thread is
+        # still inside a stage (the production model-load hang).
+        trace["_open"]["load_embedder"] = trace["_t0"]
+    log_trace(trace)
+
+    [logged] = [json.loads(l) for l in capsys.readouterr().out.splitlines() if "request_trace" in l]
+    assert "load_embedder" in logged["unfinished_stages_ms"]
+    assert "retrieve_total" in logged["stages_ms"]

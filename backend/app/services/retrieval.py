@@ -1,4 +1,5 @@
 import logging
+import os
 import pickle
 from functools import lru_cache
 
@@ -27,7 +28,13 @@ RERANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 s3_client = boto3.client("s3", region_name=aws_region)
 
 
-HF_CACHE_DIR = "/tmp/hf_cache"
+# The Docker image pre-downloads both models into HF_CACHE_DIR at build time
+# (see backend/Dockerfile) and sets HF_HUB_OFFLINE=1, so a container never
+# touches the network to load them. Loading them at request time from HF Hub
+# into /tmp is a suspect in retrieval hanging until Lambda's 120s timeout.
+# /tmp remains the default for local runs outside Docker, where the first
+# call still downloads.
+HF_CACHE_DIR = os.getenv("HF_CACHE_DIR", "/tmp/hf_cache")
 
 
 @lru_cache(maxsize=1)
@@ -38,9 +45,10 @@ def get_embeddings():
     # had to wait for it, since nothing can respond until the app finishes
     # importing. Deferring it here means only requests that actually need
     # embeddings (not chitchat, not session/message endpoints) pay that cost.
-    with stage("load_embedder"):
+    with stage("import_torch_stack"):
         from langchain_huggingface import HuggingFaceEmbeddings
 
+    with stage("load_embedder"):
         return HuggingFaceEmbeddings(
             model_name="BAAI/bge-small-en",
             model_kwargs={"device": "cpu"},
@@ -95,9 +103,9 @@ def get_bm25_retriever():
 
 @lru_cache(maxsize=1)
 def get_reranker() -> "CrossEncoder":
-    with stage("load_reranker"):
-        from sentence_transformers import CrossEncoder  # see get_embeddings() above
+    from sentence_transformers import CrossEncoder  # see get_embeddings() above
 
+    with stage("load_reranker"):
         return CrossEncoder(RERANKER_MODEL, cache_folder=HF_CACHE_DIR)
 
 
