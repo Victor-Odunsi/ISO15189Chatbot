@@ -25,6 +25,12 @@ Parameters:
   MistralApiKey:
     Type: String
     NoEcho: true
+  GeminiApiKey:
+    Type: String
+    NoEcho: true
+    # Optional: with no key, services/llm.py skips Gemini models and the
+    # chains start at the next provider.
+    Default: ""
   AdminApiKey:
     Type: String
     NoEcho: true
@@ -76,6 +82,7 @@ Resources:
           REDIS_URL: !Ref RedisUrl
           GROQ_API_KEY: !Ref GroqApiKey
           MISTRALAI_API_KEY: !Ref MistralApiKey
+          GEMINI_API_KEY: !Ref GeminiApiKey
           ADMIN_API_KEY: !Ref AdminApiKey
           FRONTEND_ORIGIN: !Ref FrontendOrigin
       Policies:

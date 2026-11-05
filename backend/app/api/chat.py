@@ -17,6 +17,7 @@ from app.services.chain import (
     get_generation_chain,
     retrieve_context,
 )
+from app.services.memory import get_chat_context, maybe_update_summary
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,8 @@ async def chat(request: Request, query: QueryInput):
             yield _sse("session", {"session_id": session_id})
 
             with stage("history"):
-                chat_history = await get_chat_history(session_id)
+                # Bounded: running summary + recent turns, not the full transcript.
+                chat_history = await get_chat_context(session_id)
             trace["history_msgs"] = len(chat_history)
 
             with stage("analyze_llm"):
@@ -92,6 +94,10 @@ async def chat(request: Request, query: QueryInput):
                     await insert_message(session_id, "user", query.question)
                     if full_answer:
                         await insert_message(session_id, "assistant", full_answer)
+                # After the user already has their answer (the "end" event went
+                # out above), so its LLM call never adds to perceived latency.
+                with stage("summarize"):
+                    trace["summary_updated"] = await maybe_update_summary(session_id)
             finally:
                 # Always emit the trace -- a failing persist (e.g. DB down) is
                 # exactly the request whose timings we most need to see.

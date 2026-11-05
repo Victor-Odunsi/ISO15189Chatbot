@@ -10,7 +10,7 @@ from langchain_core.documents import Document
 from sqlalchemy import select
 
 from app.core.config import aws_region, s3_bucket
-from app.core.tracing import stage
+from app.core.tracing import stack_dumps_while_slow, stage
 from app.db.models import Chunk
 from app.db.session import SyncSessionLocal
 
@@ -45,15 +45,25 @@ def get_embeddings():
     # had to wait for it, since nothing can respond until the app finishes
     # importing. Deferring it here means only requests that actually need
     # embeddings (not chitchat, not session/message endpoints) pay that cost.
-    with stage("import_torch_stack"):
-        from langchain_huggingface import HuggingFaceEmbeddings
+    #
+    # On Lambda this load ran >118s (vs ~5s locally under the same CPU/memory
+    # limits), so it's wrapped in periodic stack dumps to show what it's doing.
+    # torch and sentence_transformers are imported explicitly, one stage each:
+    # HuggingFaceEmbeddings imports them lazily inside its constructor, which
+    # previously hid the import cost inside load_embedder.
+    with stack_dumps_while_slow("embedder load"):
+        with stage("import_torch"):
+            import torch  # noqa: F401
+        with stage("import_sentence_transformers"):
+            import sentence_transformers  # noqa: F401
+            from langchain_huggingface import HuggingFaceEmbeddings
 
-    with stage("load_embedder"):
-        return HuggingFaceEmbeddings(
-            model_name="BAAI/bge-small-en",
-            model_kwargs={"device": "cpu"},
-            cache_folder=HF_CACHE_DIR,
-        )
+        with stage("load_embedder"):
+            return HuggingFaceEmbeddings(
+                model_name="BAAI/bge-small-en",
+                model_kwargs={"device": "cpu"},
+                cache_folder=HF_CACHE_DIR,
+            )
 
 
 def dense_search(query: str, k: int = DENSE_K) -> list[Document]:
@@ -105,7 +115,7 @@ def get_bm25_retriever():
 def get_reranker() -> "CrossEncoder":
     from sentence_transformers import CrossEncoder  # see get_embeddings() above
 
-    with stage("load_reranker"):
+    with stack_dumps_while_slow("reranker load"), stage("load_reranker"):
         return CrossEncoder(RERANKER_MODEL, cache_folder=HF_CACHE_DIR)
 
 

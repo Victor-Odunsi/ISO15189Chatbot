@@ -5,8 +5,9 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
 
+from app.core.tracing import current_trace
 from app.models.schemas import QueryAnalysis
-from app.services.llm import get_llm
+from app.services.llm import get_generation_llm, get_router_models, get_structured_router, with_fallbacks
 from app.services.retrieval import hybrid_retrieve
 
 logger = logging.getLogger(__name__)
@@ -96,6 +97,20 @@ Context:
     ("human", "{standalone_question}"),
 ])
 
+SUMMARY_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", (
+        "You maintain a running summary of a conversation between a user and an "
+        "ISO 15189 assistant, so older turns can be dropped from the context "
+        "window. Merge the previous summary (if any) with the new messages into "
+        "one concise summary of at most 150 words. Keep what later questions may "
+        "refer back to: topics and clauses discussed, the user's lab context and "
+        "goals, and any outputs produced (e.g. a checklist or SOP on X). Do not "
+        "restate the standard's content in detail. Output only the summary text "
+        "itself -- no heading, label, or word count."
+    )),
+    ("human", "Previous summary:\n{previous_summary}\n\nNew messages:\n{messages}"),
+])
+
 _GENERATION_PROMPTS = {
     "chitchat": CHITCHAT_PROMPT,
     "general": GENERAL_PROMPT,
@@ -105,8 +120,21 @@ _GENERATION_PROMPTS = {
 
 
 async def analyze_query(question: str, chat_history: list[dict]) -> QueryAnalysis:
-    chain = ANALYSIS_PROMPT | get_llm().with_structured_output(QueryAnalysis)
-    return await chain.ainvoke({"input": question, "chat_history": chat_history})
+    chain = ANALYSIS_PROMPT | get_structured_router(QueryAnalysis)
+    try:
+        return await chain.ainvoke({"input": question, "chat_history": chat_history})
+    except Exception as e:
+        # Degrade rather than fail the whole request: e.g. a prompt-injected
+        # question ("ignore your instructions...") can make the model reply in
+        # prose instead of calling the schema tool (Groq raises "Tool choice is
+        # required, but model did not call a tool"), or every router model can
+        # be rate-limited. Treat it as a general question, asked verbatim --
+        # the generation prompt still grounds the answer in retrieved text.
+        logger.warning(f"Query analysis failed ({type(e).__name__}: {e}); defaulting to general intent")
+        trace = current_trace()
+        if trace is not None:
+            trace["analysis_degraded"] = type(e).__name__
+        return QueryAnalysis(standalone_question=question, intent="general")
 
 
 def retrieve_context(standalone_question: str) -> list[Document]:
@@ -134,4 +162,12 @@ def build_citations(documents: list[Document]) -> list[dict]:
 
 def get_generation_chain(intent: str) -> Runnable:
     prompt = _GENERATION_PROMPTS.get(intent, GENERAL_PROMPT)
-    return prompt | get_llm() | StrOutputParser()
+    return prompt | get_generation_llm() | StrOutputParser()
+
+
+async def summarize_messages(previous_summary: str | None, messages: list[dict]) -> str:
+    # Runs on the fast router chain: summarizing is a small task, and it
+    # keeps this off the generation model's rate-limit bucket.
+    transcript = "\n".join(f"{m['role']}: {m['content']}" for m in messages)
+    chain = SUMMARY_PROMPT | with_fallbacks(get_router_models()) | StrOutputParser()
+    return await chain.ainvoke({"previous_summary": previous_summary or "(none)", "messages": transcript})

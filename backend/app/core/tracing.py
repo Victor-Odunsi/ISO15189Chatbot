@@ -70,6 +70,27 @@ def stage(name: str):
         trace["stages_ms"][name] = round((time.perf_counter() - t) * 1000, 1)
 
 
+@contextmanager
+def stack_dumps_while_slow(label: str, every_s: int = 20):
+    """
+    While the block runs, dump every thread's stack to stderr every `every_s`
+    seconds (Python's built-in faulthandler). Stage timings say *where* time
+    goes; these dumps say *why* -- successive dumps showing different import
+    lines mean slow progress, the same line every time means stuck.
+
+    faulthandler supports one pending timer per process, so don't nest these.
+    """
+    import faulthandler
+
+    print(f"stack_dumps_while_slow: watching {label} (dumping every {every_s}s if still running)",
+          file=sys.stderr, flush=True)
+    faulthandler.dump_traceback_later(every_s, repeat=True, file=sys.stderr)
+    try:
+        yield
+    finally:
+        faulthandler.cancel_dump_traceback_later()
+
+
 def log_trace(trace: dict) -> None:
     trace["total_ms"] = elapsed_ms(trace)
     # Stages still running when the request ended -- e.g. a worker thread

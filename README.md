@@ -86,7 +86,7 @@ docker compose exec backend python -c "from app.services.ingestion import run_in
 ```bash
 cd backend
 python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt  # production deps (requirements.txt) + test/eval tooling
 cp ../.env.example ../.env  # edit as needed; DATABASE_URL must point at a Postgres instance with the pgvector extension installed, REDIS_URL at a running Redis
 alembic upgrade head
 uvicorn app.main:app --reload

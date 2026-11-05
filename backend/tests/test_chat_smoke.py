@@ -27,7 +27,9 @@ def client():
 
 
 def test_chat_streams_expected_event_sequence(client):
-    with patch("app.api.chat.get_chat_history", new=AsyncMock(return_value=[])), patch(
+    with patch("app.api.chat.get_chat_context", new=AsyncMock(return_value=[])), patch(
+        "app.api.chat.maybe_update_summary", new=AsyncMock(return_value=False)
+    ), patch(
         "app.api.chat.insert_message", new=AsyncMock()
     ), patch(
         "app.api.chat.analyze_query",
@@ -51,7 +53,9 @@ def test_chat_streams_expected_event_sequence(client):
 
 
 def test_chat_emits_error_event_on_failure(client):
-    with patch("app.api.chat.get_chat_history", new=AsyncMock(return_value=[])), patch(
+    with patch("app.api.chat.get_chat_context", new=AsyncMock(return_value=[])), patch(
+        "app.api.chat.maybe_update_summary", new=AsyncMock(return_value=False)
+    ), patch(
         "app.api.chat.insert_message", new=AsyncMock()
     ), patch(
         "app.api.chat.analyze_query", new=AsyncMock(side_effect=RuntimeError("boom"))
@@ -71,7 +75,9 @@ def _request_traces(capsys) -> list[dict]:
 
 
 def test_chat_logs_per_stage_trace(client, capsys):
-    with patch("app.api.chat.get_chat_history", new=AsyncMock(return_value=[])), patch(
+    with patch("app.api.chat.get_chat_context", new=AsyncMock(return_value=[])), patch(
+        "app.api.chat.maybe_update_summary", new=AsyncMock(return_value=False)
+    ), patch(
         "app.api.chat.insert_message", new=AsyncMock()
     ), patch(
         "app.api.chat.analyze_query",
@@ -94,7 +100,9 @@ def test_chat_logs_per_stage_trace(client, capsys):
 
 
 def test_chat_logs_trace_even_when_persist_fails(client, capsys):
-    with patch("app.api.chat.get_chat_history", new=AsyncMock(return_value=[])), patch(
+    with patch("app.api.chat.get_chat_context", new=AsyncMock(return_value=[])), patch(
+        "app.api.chat.maybe_update_summary", new=AsyncMock(return_value=False)
+    ), patch(
         "app.api.chat.insert_message", new=AsyncMock(side_effect=RuntimeError("db down"))
     ), patch(
         "app.api.chat.analyze_query", new=AsyncMock(side_effect=RuntimeError("boom"))
