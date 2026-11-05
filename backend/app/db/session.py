@@ -40,6 +40,9 @@ AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False, class_=As
 sync_engine = create_engine(
     sync_database_url,
     pool_pre_ping=True,
-    connect_args={"prepare_threshold": None},
+    # connect_timeout: same 10s ceiling as the async engine's "timeout" above.
+    # Without it, a stuck connect blocks the retrieval thread until Lambda's
+    # 120s function timeout kills the whole request.
+    connect_args={"prepare_threshold": None, "connect_timeout": 10},
 )
 SyncSessionLocal = sessionmaker(sync_engine, expire_on_commit=False, class_=Session)

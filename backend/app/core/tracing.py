@@ -38,6 +38,7 @@ def start_trace(**fields) -> dict:
         "request_id": str(uuid.uuid4()),
         "cold_start": _cold_start,
         "stages_ms": {},
+        "_open": {},
         "_t0": time.perf_counter(),
         **fields,
     }
@@ -61,14 +62,23 @@ def stage(name: str):
         yield
         return
     t = time.perf_counter()
+    trace["_open"][name] = t
     try:
         yield
     finally:
+        trace["_open"].pop(name, None)
         trace["stages_ms"][name] = round((time.perf_counter() - t) * 1000, 1)
 
 
 def log_trace(trace: dict) -> None:
     trace["total_ms"] = elapsed_ms(trace)
+    # Stages still running when the request ended -- e.g. a worker thread
+    # stuck in a model download when Lambda's timeout cancelled the request.
+    # Without this, a hang shows up only as a *missing* stage.
+    now = time.perf_counter()
+    trace["unfinished_stages_ms"] = {
+        name: round((now - t) * 1000, 1) for name, t in list(trace["_open"].items())
+    }
     # A bare JSON line on stdout, not logging (whose "INFO:name:" prefix
     # stops CloudWatch Logs Insights from auto-extracting the JSON fields).
     print(json.dumps({k: v for k, v in trace.items() if not k.startswith("_")}), file=sys.stdout, flush=True)

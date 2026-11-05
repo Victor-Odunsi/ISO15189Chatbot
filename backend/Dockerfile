@@ -10,8 +10,28 @@ WORKDIR /app/backend
 
 RUN pip install --upgrade pip
 
+# CPU-only torch first: the default PyPI torch wheel on Linux is the CUDA
+# build, which drags in several GB of nvidia-* libraries this CPU-only
+# Lambda never uses. requirements.txt's torch==2.8.0 is then already
+# satisfied by 2.8.0+cpu (PEP 440: a local version label matches), so the
+# CUDA build is never pulled in.
+RUN pip install --default-timeout=100 --no-cache-dir \
+    --index-url https://download.pytorch.org/whl/cpu torch==2.8.0
+
 COPY backend/requirements.txt .
 RUN pip install --default-timeout=100 --no-cache-dir -r requirements.txt
+
+# Bake both models into the image so no request ever downloads them from
+# HF Hub at runtime (a suspect in retrieval hanging until Lambda's 120s
+# timeout, and needless per-container cold-start work either way).
+# HF_HUB_OFFLINE=1 makes any accidental runtime fetch fail fast instead of
+# hanging. Read-only at runtime is fine: loading from a cache doesn't write.
+ENV HF_CACHE_DIR=/opt/hf_cache
+RUN python -c "\
+from sentence_transformers import SentenceTransformer, CrossEncoder; \
+SentenceTransformer('BAAI/bge-small-en', cache_folder='/opt/hf_cache'); \
+CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2', cache_folder='/opt/hf_cache')"
+ENV HF_HUB_OFFLINE=1
 
 COPY backend/ .
 
